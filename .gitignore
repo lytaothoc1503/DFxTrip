@@ -17,6 +17,7 @@ dist/
 screenshots/
 artifacts/
 attachments/
+.node_modules.lock
 *.log
 
 # sandbox state; keep the auth flag
@@ -26,3 +27,6 @@ attachments/
 # os
 .DS_Store
 Thumbs.db
+
+# local sandbox notes
+/AGENTS.md
