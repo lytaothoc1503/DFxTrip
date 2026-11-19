@@ -1,0 +1,45 @@
+@import url("https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,560;9..144,700&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #fbf6ef;
+  --color-surface: #fffdf9;
+  --color-ink: #2c1c18;
+  --color-muted: #7a655c;
+  --color-line: #eadfd2;
+  --color-brand: #9a2f3c;
+  --color-brand-dark: #6f1f2a;
+  --color-on-brand: #fff8f4;
+  --color-gold: #c59b27;
+  --color-gold-ink: #3d2c06;
+  --color-navy: #16315c;
+  --color-on-navy: #f7f4ee;
+  --color-rose: #fde8ef;
+  --color-rose-ink: #9a2458;
+  --color-note: #fff4f4;
+  --color-example: #eef5fb;
+  --font-sans: "Be Vietnam Pro", system-ui, sans-serif;
+  --font-display: "Fraunces", Georgia, serif;
+  --radius-card: 1.5rem;
+}
+
+@layer base {
+  html {
+    background: var(--color-bg);
+    color: var(--color-ink);
+  }
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-bg);
+    color: var(--color-ink);
+    line-height: 1.5;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@utility display {
+  font-family: var(--font-display);
+}
