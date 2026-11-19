@@ -18,48 +18,63 @@ function HoldsPage() {
   return (
     <Shell>
       <h1 className="display text-4xl">Đặt chỗ</h1>
-      <p className="mt-1 text-sm text-muted">Chỉ lưu trên máy này. Không phải vé hay phòng đã xác nhận.</p>
+      <p className="mt-2 text-base text-muted">Chỉ lưu trên máy này. Không phải vé hay phòng đã xác nhận.</p>
 
-      <h2 className="mt-6 text-lg font-semibold">Phòng</h2>
+      <h2 className="mt-8 text-2xl font-semibold">Phòng</h2>
       {stays.length === 0 ? (
-        <p className="mt-2 text-sm text-muted">Chưa giữ phòng.</p>
+        <div className="mt-4 rounded-card border border-line bg-surface p-5">
+          <p className="text-lg">Chưa giữ phòng trên máy này.</p>
+          <Link
+            to="/kham-pha"
+            className="mt-5 flex h-14 w-full items-center justify-center rounded-full bg-brand text-lg font-semibold text-on-brand"
+          >
+            Giữ phòng
+          </Link>
+        </div>
       ) : (
-        <ul className="mt-3 space-y-3">
+        <ul className="mt-4 space-y-4">
           {stays.map((stay) => (
-            <li key={stay.id} className="rounded-card border border-line bg-surface p-4">
-              <p className="text-sm font-semibold text-brand">{stay.id}</p>
-              <p className="mt-1 font-medium">{getHotel(stay.hotelId)?.name}</p>
-              <p className="text-sm text-muted">
+            <li key={stay.id} className="rounded-card border border-line bg-surface p-5">
+              <p className="text-base font-semibold text-brand">{stay.id}</p>
+              <p className="mt-2 text-xl font-medium">{getHotel(stay.hotelId)?.name}</p>
+              <p className="mt-1 text-base text-muted">
                 {stay.room} · {stay.checkIn} – {stay.checkOut} · {stay.nights} đêm · {stay.guests} khách
               </p>
-              <p className="text-sm">{stay.name} · {stay.phone}</p>
-              <p className="mt-2 text-lg font-semibold">{money(stay.total)}</p>
+              <p className="mt-1 text-base">
+                {stay.name} · {stay.phone}
+              </p>
+              <p className="mt-3 text-2xl font-semibold">{money(stay.total)}</p>
             </li>
           ))}
         </ul>
       )}
 
-      <h2 className="mt-6 text-lg font-semibold">Vé show</h2>
+      <h2 className="mt-8 text-2xl font-semibold">Vé show</h2>
       {holds.length === 0 ? (
-        <div className="mt-3 rounded-card border border-line bg-surface p-5">
-          <p>Chưa có vé nào được giữ.</p>
-          <Link to="/ve" className="mt-4 inline-flex h-12 items-center rounded-full bg-brand px-5 font-semibold text-on-brand">
-            Chọn vé
+        <div className="mt-4 rounded-card border border-line bg-surface p-5">
+          <p className="text-lg">Chưa giữ vé trên máy này.</p>
+          <Link
+            to="/ve"
+            className="mt-5 flex h-14 w-full items-center justify-center rounded-full bg-brand text-lg font-semibold text-on-brand"
+          >
+            Giữ vé
           </Link>
         </div>
       ) : (
-        <ul className="mt-3 space-y-3">
+        <ul className="mt-4 space-y-4">
           {holds.map((hold) => {
             const table = tableById(hold.tableId);
             return (
-              <li key={hold.id} className="rounded-card border border-line bg-surface p-4">
-                <p className="text-sm font-semibold text-brand">{hold.id}</p>
-                <p className="mt-1 font-medium">{hold.name} · {hold.phone}</p>
-                <p className="text-sm text-muted">
+              <li key={hold.id} className="rounded-card border border-line bg-surface p-5">
+                <p className="text-base font-semibold text-brand">{hold.id}</p>
+                <p className="mt-2 text-xl font-medium">
+                  {hold.name} · {hold.phone}
+                </p>
+                <p className="mt-1 text-base text-muted">
                   {hold.date} · {hold.adults} người lớn · {hold.kids} trẻ · {hold.infants} dưới 1m
                 </p>
-                <p className="text-sm">{table ? table.label : "Chưa chọn bàn sát biển"}</p>
-                <p className="mt-2 text-lg font-semibold">{formatVnd(hold.total)}</p>
+                <p className="mt-1 text-base">{table ? table.label : "Chưa chọn bàn sát biển"}</p>
+                <p className="mt-3 text-2xl font-semibold">{formatVnd(hold.total)}</p>
               </li>
             );
           })}

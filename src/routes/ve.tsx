@@ -172,8 +172,8 @@ function TicketPage() {
           <p className="flex justify-between"><span>Phụ thu bàn</span><span>{formatVnd(price.fee)}</span></p>
           <p className="flex justify-between text-lg font-semibold"><span>Tổng</span><span>{formatVnd(price.total)}</span></p>
         </div>
-        <button type="button" onClick={hold} className="h-12 w-full rounded-full bg-brand font-semibold text-on-brand">
-          Giữ chỗ trên máy này
+        <button type="button" onClick={hold} className="h-14 w-full rounded-full bg-brand text-lg font-semibold text-on-brand">
+          Giữ vé trên máy này
         </button>
         <p className="text-sm text-muted">
           Chưa trừ tiền và chưa giữ bàn thật. Nâng cấp bàn sát biển vẫn đăng ký tại nhà hàng.

@@ -28,8 +28,11 @@ function HotelPage() {
   if (!hotel) {
     return (
       <Shell>
-        <p>Không thấy khách sạn này.</p>
-        <Link to="/kham-pha" className="mt-4 inline-flex h-12 items-center text-brand">
+        <p className="text-lg">Không thấy khách sạn này.</p>
+        <Link
+          to="/kham-pha"
+          className="mt-5 flex h-14 w-full items-center justify-center rounded-full bg-brand text-lg font-semibold text-on-brand"
+        >
           Về khám phá
         </Link>
       </Shell>
@@ -66,60 +69,102 @@ function HotelPage() {
 
   return (
     <Shell>
-      <img src={hotel.image} alt="" className="h-52 w-full rounded-card object-cover" />
-      <p className="mt-4 text-sm text-muted">{hotel.city} · {hotel.stars} sao · {hotel.score}</p>
+      <img src={hotel.image} alt="" className="h-56 w-full rounded-card object-cover" />
+      <p className="mt-4 text-base text-muted">
+        {hotel.city} · {hotel.stars} sao · {hotel.score}
+      </p>
       <h1 className="display text-4xl leading-tight">{hotel.name}</h1>
-      <p className="mt-2 text-sm text-muted">Giá mẫu. Tổng đã trừ 10%, làm tròn hạng phòng tới 10.000đ.</p>
+      <p className="mt-2 text-base text-muted">Giá mẫu. Tổng đã trừ 10%, làm tròn hạng phòng tới 10.000đ.</p>
 
-      <div className="mt-4 grid gap-3">
+      <div className="mt-5 grid gap-3">
         {ROOMS.map((item, index) => (
           <button
             key={item.name}
             type="button"
             onClick={() => setRoom(index)}
-            className={`flex items-center justify-between rounded-card border px-4 py-3 text-left ${
+            className={`flex min-h-14 items-center justify-between rounded-card border px-4 py-4 text-left text-lg ${
               room === index ? "border-brand bg-surface" : "border-line bg-surface"
             }`}
           >
             <span className="font-medium">{item.name}</span>
-            <span>{formatVnd(roomPrice(hotel.price, item.factor))}/đêm</span>
+            <span className="font-semibold">{formatVnd(roomPrice(hotel.price, item.factor))}/đêm</span>
           </button>
         ))}
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-3">
-        <label className="text-sm">
+      <div className="mt-5 grid grid-cols-1 gap-4">
+        <label className="text-base font-medium">
           Nhận phòng
-          <input type="date" value={checkIn} onChange={(event) => setCheckIn(event.target.value)} className="mt-1 h-12 w-full rounded-2xl border border-line bg-surface px-3" />
+          <input
+            type="date"
+            value={checkIn}
+            onChange={(event) => setCheckIn(event.target.value)}
+            className="mt-2 h-14 w-full rounded-2xl border border-line bg-surface px-4 text-lg"
+          />
         </label>
-        <label className="text-sm">
+        <label className="text-base font-medium">
           Trả phòng
-          <input type="date" value={checkOut} onChange={(event) => setCheckOut(event.target.value)} className="mt-1 h-12 w-full rounded-2xl border border-line bg-surface px-3" />
+          <input
+            type="date"
+            value={checkOut}
+            onChange={(event) => setCheckOut(event.target.value)}
+            className="mt-2 h-14 w-full rounded-2xl border border-line bg-surface px-4 text-lg"
+          />
         </label>
       </div>
 
-      <div className="mt-4 flex items-center justify-between">
-        <span className="font-medium">Số khách</span>
-        <div className="flex items-center gap-2">
-          <button type="button" className="h-12 w-12 rounded-full border border-line" onClick={() => setGuests(Math.max(1, guests - 1))}>−</button>
-          <span className="w-8 text-center text-lg font-semibold">{guests}</span>
-          <button type="button" className="h-12 w-12 rounded-full bg-brand text-on-brand" onClick={() => setGuests(guests + 1)}>+</button>
+      <div className="mt-5 flex items-center justify-between">
+        <span className="text-lg font-medium">Số khách</span>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            className="h-14 w-14 rounded-full border border-line text-2xl"
+            onClick={() => setGuests(Math.max(1, guests - 1))}
+            aria-label="Giảm số khách"
+          >
+            −
+          </button>
+          <span className="w-10 text-center text-2xl font-semibold">{guests}</span>
+          <button
+            type="button"
+            className="h-14 w-14 rounded-full bg-brand text-2xl text-on-brand"
+            onClick={() => setGuests(guests + 1)}
+            aria-label="Tăng số khách"
+          >
+            +
+          </button>
         </div>
       </div>
 
-      <label className="mt-4 block text-sm">
+      <label className="mt-5 block text-base font-medium">
         Tên
-        <input value={name} onChange={(event) => setName(event.target.value)} className="mt-1 h-12 w-full rounded-2xl border border-line bg-surface px-3" />
+        <input
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          className="mt-2 h-14 w-full rounded-2xl border border-line bg-surface px-4 text-lg"
+        />
       </label>
-      <label className="mt-3 block text-sm">
+      <label className="mt-4 block text-base font-medium">
         Số điện thoại
-        <input inputMode="tel" value={phone} onChange={(event) => setPhone(event.target.value)} className="mt-1 h-12 w-full rounded-2xl border border-line bg-surface px-3" />
+        <input
+          inputMode="tel"
+          value={phone}
+          onChange={(event) => setPhone(event.target.value)}
+          className="mt-2 h-14 w-full rounded-2xl border border-line bg-surface px-4 text-lg"
+        />
       </label>
-      {error ? <p className="mt-3 text-sm font-medium text-brand">{error}</p> : null}
-      <p className="mt-4 text-lg font-semibold">{nights > 0 ? `${nights} đêm · ${formatVnd(total)}` : "Chọn ngày trả sau ngày nhận"}</p>
-      <button type="button" onClick={hold} className="mt-3 h-12 w-full rounded-full bg-brand font-semibold text-on-brand">
+      {error ? <p className="mt-4 text-base font-medium text-brand">{error}</p> : null}
+      <p className="mt-5 text-2xl font-semibold">
+        {nights > 0 ? `${nights} đêm · ${formatVnd(total)}` : "Chọn ngày trả sau ngày nhận"}
+      </p>
+      <button
+        type="button"
+        onClick={hold}
+        className="mt-4 h-14 w-full rounded-full bg-brand text-lg font-semibold text-on-brand"
+      >
         Giữ phòng trên máy này
       </button>
+      <p className="mt-3 text-base text-muted">Chưa trừ tiền và chưa phải phòng đã xác nhận.</p>
     </Shell>
   );
 }
