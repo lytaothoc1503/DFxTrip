@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Shell } from "@/components/shell";
-import { formatVnd as money, getHotel, loadStays, type Stay } from "@/lib/hotels";
-import { formatVnd, loadHolds, tableById, type Hold } from "@/lib/tickets";
+import { formatVnd as money, getHotel, loadStays, removeStay, type Stay } from "@/lib/hotels";
+import { formatVnd, loadHolds, removeHold, tableById, type Hold } from "@/lib/services";
 
 export const Route = createFileRoute("/dat-cho")({ component: HoldsPage });
 
@@ -44,6 +44,13 @@ function HoldsPage() {
                 {stay.name} · {stay.phone}
               </p>
               <p className="mt-3 text-2xl font-semibold">{money(stay.total)}</p>
+              <button
+                type="button"
+                className="mt-4 h-14 w-full rounded-full border border-line text-lg font-semibold"
+                onClick={() => setStays(removeStay(stay.id))}
+              >
+                Xóa giữ chỗ phòng
+              </button>
             </li>
           ))}
         </ul>
@@ -75,6 +82,13 @@ function HoldsPage() {
                 </p>
                 <p className="mt-1 text-base">{table ? table.label : "Chưa chọn bàn sát biển"}</p>
                 <p className="mt-3 text-2xl font-semibold">{formatVnd(hold.total)}</p>
+                <button
+                  type="button"
+                  className="mt-4 h-14 w-full rounded-full border border-line text-lg font-semibold"
+                  onClick={() => setHolds(removeHold(hold.id))}
+                >
+                  Xóa giữ chỗ vé
+                </button>
               </li>
             );
           })}

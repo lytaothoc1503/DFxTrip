@@ -14,7 +14,11 @@ import { Route as DatChoRouteImport } from './routes/dat-cho'
 import { Route as KhamPhaRouteImport } from './routes/kham-pha'
 import { Route as VeRouteImport } from './routes/ve'
 import { Route as YeuThichRouteImport } from './routes/yeu-thich'
+import { Route as BlogIndexRouteImport } from './routes/blog.index'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as KhachSanIdRouteImport } from './routes/khach-san.$id'
+import { Route as TourIndexRouteImport } from './routes/tour.index'
+import { Route as TourIdRouteImport } from './routes/tour.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -41,9 +45,29 @@ const YeuThichRoute = YeuThichRouteImport.update({
   path: '/yeu-thich',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const KhachSanIdRoute = KhachSanIdRouteImport.update({
   id: '/khach-san/$id',
   path: '/khach-san/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TourIndexRoute = TourIndexRouteImport.update({
+  id: '/tour/',
+  path: '/tour/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TourIdRoute = TourIdRouteImport.update({
+  id: '/tour/$id',
+  path: '/tour/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -53,7 +77,11 @@ export interface FileRoutesByFullPath {
   '/kham-pha': typeof KhamPhaRoute
   '/ve': typeof VeRoute
   '/yeu-thich': typeof YeuThichRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/khach-san/$id': typeof KhachSanIdRoute
+  '/tour/$id': typeof TourIdRoute
+  '/blog/': typeof BlogIndexRoute
+  '/tour/': typeof TourIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -61,7 +89,11 @@ export interface FileRoutesByTo {
   '/kham-pha': typeof KhamPhaRoute
   '/ve': typeof VeRoute
   '/yeu-thich': typeof YeuThichRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/khach-san/$id': typeof KhachSanIdRoute
+  '/tour/$id': typeof TourIdRoute
+  '/blog': typeof BlogIndexRoute
+  '/tour': typeof TourIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -70,14 +102,37 @@ export interface FileRoutesById {
   '/kham-pha': typeof KhamPhaRoute
   '/ve': typeof VeRoute
   '/yeu-thich': typeof YeuThichRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/khach-san/$id': typeof KhachSanIdRoute
+  '/tour/$id': typeof TourIdRoute
+  '/blog/': typeof BlogIndexRoute
+  '/tour/': typeof TourIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/dat-cho' | '/kham-pha' | '/ve' | '/yeu-thich' | '/khach-san/$id'
+    | '/'
+    | '/dat-cho'
+    | '/kham-pha'
+    | '/ve'
+    | '/yeu-thich'
+    | '/blog/$slug'
+    | '/khach-san/$id'
+    | '/tour/$id'
+    | '/blog/'
+    | '/tour/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dat-cho' | '/kham-pha' | '/ve' | '/yeu-thich' | '/khach-san/$id'
+  to:
+    | '/'
+    | '/dat-cho'
+    | '/kham-pha'
+    | '/ve'
+    | '/yeu-thich'
+    | '/blog/$slug'
+    | '/khach-san/$id'
+    | '/tour/$id'
+    | '/blog'
+    | '/tour'
   id:
     | '__root__'
     | '/'
@@ -85,7 +140,11 @@ export interface FileRouteTypes {
     | '/kham-pha'
     | '/ve'
     | '/yeu-thich'
+    | '/blog/$slug'
     | '/khach-san/$id'
+    | '/tour/$id'
+    | '/blog/'
+    | '/tour/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -94,7 +153,11 @@ export interface RootRouteChildren {
   KhamPhaRoute: typeof KhamPhaRoute
   VeRoute: typeof VeRoute
   YeuThichRoute: typeof YeuThichRoute
+  BlogSlugRoute: typeof BlogSlugRoute
   KhachSanIdRoute: typeof KhachSanIdRoute
+  TourIdRoute: typeof TourIdRoute
+  BlogIndexRoute: typeof BlogIndexRoute
+  TourIndexRoute: typeof TourIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -134,11 +197,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof YeuThichRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/khach-san/$id': {
       id: '/khach-san/$id'
       path: '/khach-san/$id'
       fullPath: '/khach-san/$id'
       preLoaderRoute: typeof KhachSanIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tour/': {
+      id: '/tour/'
+      path: '/tour'
+      fullPath: '/tour/'
+      preLoaderRoute: typeof TourIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tour/$id': {
+      id: '/tour/$id'
+      path: '/tour/$id'
+      fullPath: '/tour/$id'
+      preLoaderRoute: typeof TourIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -150,7 +241,11 @@ const rootRouteChildren: RootRouteChildren = {
   KhamPhaRoute: KhamPhaRoute,
   VeRoute: VeRoute,
   YeuThichRoute: YeuThichRoute,
+  BlogSlugRoute: BlogSlugRoute,
   KhachSanIdRoute: KhachSanIdRoute,
+  TourIdRoute: TourIdRoute,
+  BlogIndexRoute: BlogIndexRoute,
+  TourIndexRoute: TourIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

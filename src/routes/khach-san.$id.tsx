@@ -1,6 +1,8 @@
 import { createFileRoute, Link, useNavigate, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import { Shell } from "@/components/shell";
+import { BRAND } from "@/lib/brand";
+import { reviewsFor } from "@/lib/content";
 import {
   ROOMS,
   formatVnd,
@@ -40,8 +42,9 @@ function HotelPage() {
   }
 
   const nights = nightsBetween(checkIn, checkOut);
-  const nightly = roomPrice(hotel.price, ROOMS[room]?.factor ?? 1);
+  const nightly = roomPrice(hotel.price, room);
   const total = nights > 0 ? stayTotal(nightly, nights) : 0;
+  const reviews = reviewsFor(hotel.id);
 
   function hold() {
     if (nights < 1) {
@@ -70,11 +73,20 @@ function HotelPage() {
   return (
     <Shell>
       <img src={hotel.image} alt="" className="h-56 w-full rounded-card object-cover" />
+      <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+        {hotel.gallery.map((src) => (
+          <img key={src} src={src} alt="" className="h-20 w-28 shrink-0 rounded-2xl object-cover" />
+        ))}
+      </div>
       <p className="mt-4 text-base text-muted">
-        {hotel.city} · {hotel.stars} sao · {hotel.score}
+        {hotel.city} · {hotel.stars} sao · {hotel.score} ({hotel.reviews.toLocaleString("vi-VN")} đánh giá)
       </p>
       <h1 className="display text-4xl leading-tight">{hotel.name}</h1>
-      <p className="mt-2 text-base text-muted">Giá mẫu. Tổng đã trừ 10%, làm tròn hạng phòng tới 10.000đ.</p>
+      <p className="mt-2 text-base text-muted">{hotel.address}</p>
+      <p className="mt-3 text-base">{hotel.description}</p>
+      <p className="mt-2 text-base text-muted">
+        Giá mẫu. {BRAND.discountLabel}. Làm tròn hạng phòng tới 10.000đ.
+      </p>
 
       <div className="mt-5 grid gap-3">
         {ROOMS.map((item, index) => (
@@ -87,7 +99,7 @@ function HotelPage() {
             }`}
           >
             <span className="font-medium">{item.name}</span>
-            <span className="font-semibold">{formatVnd(roomPrice(hotel.price, item.factor))}/đêm</span>
+            <span className="font-semibold">{formatVnd(roomPrice(hotel.price, index))}/đêm</span>
           </button>
         ))}
       </div>
@@ -165,6 +177,25 @@ function HotelPage() {
         Giữ phòng trên máy này
       </button>
       <p className="mt-3 text-base text-muted">Chưa trừ tiền và chưa phải phòng đã xác nhận.</p>
+
+      {reviews.length > 0 ? (
+        <section className="mt-8">
+          <h2 className="text-2xl font-semibold">Đánh giá mẫu</h2>
+          <ul className="mt-4 space-y-3">
+            {reviews.map((review) => (
+              <li key={review.id} className="rounded-card border border-line bg-surface p-4">
+                <p className="font-semibold">
+                  {review.name} · {review.score}
+                </p>
+                <p className="text-sm text-muted">
+                  {review.from} · {review.trip} · {review.date}
+                </p>
+                <p className="mt-2 text-base">{review.text}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
     </Shell>
   );
 }
