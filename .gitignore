@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# build output
+.vercel/
+dist/
+.output/
+.nitro/
+*.tsbuildinfo
+
+# secrets
+.env
+.env.*
+!.env.example
+
+# local preview and generated files
+screenshots/
+artifacts/
+attachments/
+*.log
+
+# sandbox state; keep the auth flag
+.grok/*
+!.grok/app-env.json
+
+# os
+.DS_Store
+Thumbs.db
