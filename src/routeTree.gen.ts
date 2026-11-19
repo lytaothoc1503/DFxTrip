@@ -11,14 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DatChoRouteImport } from './routes/dat-cho'
-import { Route as KhamPhaRouteImport } from './routes/kham-pha'
+import { Route as TaiKhoanRouteImport } from './routes/tai-khoan'
 import { Route as VeRouteImport } from './routes/ve'
 import { Route as YeuThichRouteImport } from './routes/yeu-thich'
-import { Route as BlogIndexRouteImport } from './routes/blog.index'
-import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as KhachSanIndexRouteImport } from './routes/khach-san.index'
 import { Route as KhachSanIdRouteImport } from './routes/khach-san.$id'
-import { Route as TourIndexRouteImport } from './routes/tour.index'
-import { Route as TourIdRouteImport } from './routes/tour.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -30,9 +27,9 @@ const DatChoRoute = DatChoRouteImport.update({
   path: '/dat-cho',
   getParentRoute: () => rootRouteImport,
 } as any)
-const KhamPhaRoute = KhamPhaRouteImport.update({
-  id: '/kham-pha',
-  path: '/kham-pha',
+const TaiKhoanRoute = TaiKhoanRouteImport.update({
+  id: '/tai-khoan',
+  path: '/tai-khoan',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VeRoute = VeRouteImport.update({
@@ -45,14 +42,9 @@ const YeuThichRoute = YeuThichRouteImport.update({
   path: '/yeu-thich',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BlogIndexRoute = BlogIndexRouteImport.update({
-  id: '/blog/',
-  path: '/blog/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlogSlugRoute = BlogSlugRouteImport.update({
-  id: '/blog/$slug',
-  path: '/blog/$slug',
+const KhachSanIndexRoute = KhachSanIndexRouteImport.update({
+  id: '/khach-san/',
+  path: '/khach-san/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KhachSanIdRoute = KhachSanIdRouteImport.update({
@@ -60,104 +52,73 @@ const KhachSanIdRoute = KhachSanIdRouteImport.update({
   path: '/khach-san/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TourIndexRoute = TourIndexRouteImport.update({
-  id: '/tour/',
-  path: '/tour/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TourIdRoute = TourIdRouteImport.update({
-  id: '/tour/$id',
-  path: '/tour/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dat-cho': typeof DatChoRoute
-  '/kham-pha': typeof KhamPhaRoute
+  '/tai-khoan': typeof TaiKhoanRoute
   '/ve': typeof VeRoute
   '/yeu-thich': typeof YeuThichRoute
-  '/blog/$slug': typeof BlogSlugRoute
   '/khach-san/$id': typeof KhachSanIdRoute
-  '/tour/$id': typeof TourIdRoute
-  '/blog/': typeof BlogIndexRoute
-  '/tour/': typeof TourIndexRoute
+  '/khach-san/': typeof KhachSanIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dat-cho': typeof DatChoRoute
-  '/kham-pha': typeof KhamPhaRoute
+  '/tai-khoan': typeof TaiKhoanRoute
   '/ve': typeof VeRoute
   '/yeu-thich': typeof YeuThichRoute
-  '/blog/$slug': typeof BlogSlugRoute
   '/khach-san/$id': typeof KhachSanIdRoute
-  '/tour/$id': typeof TourIdRoute
-  '/blog': typeof BlogIndexRoute
-  '/tour': typeof TourIndexRoute
+  '/khach-san': typeof KhachSanIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dat-cho': typeof DatChoRoute
-  '/kham-pha': typeof KhamPhaRoute
+  '/tai-khoan': typeof TaiKhoanRoute
   '/ve': typeof VeRoute
   '/yeu-thich': typeof YeuThichRoute
-  '/blog/$slug': typeof BlogSlugRoute
   '/khach-san/$id': typeof KhachSanIdRoute
-  '/tour/$id': typeof TourIdRoute
-  '/blog/': typeof BlogIndexRoute
-  '/tour/': typeof TourIndexRoute
+  '/khach-san/': typeof KhachSanIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/dat-cho'
-    | '/kham-pha'
+    | '/tai-khoan'
     | '/ve'
     | '/yeu-thich'
-    | '/blog/$slug'
     | '/khach-san/$id'
-    | '/tour/$id'
-    | '/blog/'
-    | '/tour/'
+    | '/khach-san/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/dat-cho'
-    | '/kham-pha'
+    | '/tai-khoan'
     | '/ve'
     | '/yeu-thich'
-    | '/blog/$slug'
     | '/khach-san/$id'
-    | '/tour/$id'
-    | '/blog'
-    | '/tour'
+    | '/khach-san'
   id:
     | '__root__'
     | '/'
     | '/dat-cho'
-    | '/kham-pha'
+    | '/tai-khoan'
     | '/ve'
     | '/yeu-thich'
-    | '/blog/$slug'
     | '/khach-san/$id'
-    | '/tour/$id'
-    | '/blog/'
-    | '/tour/'
+    | '/khach-san/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DatChoRoute: typeof DatChoRoute
-  KhamPhaRoute: typeof KhamPhaRoute
+  TaiKhoanRoute: typeof TaiKhoanRoute
   VeRoute: typeof VeRoute
   YeuThichRoute: typeof YeuThichRoute
-  BlogSlugRoute: typeof BlogSlugRoute
   KhachSanIdRoute: typeof KhachSanIdRoute
-  TourIdRoute: typeof TourIdRoute
-  BlogIndexRoute: typeof BlogIndexRoute
-  TourIndexRoute: typeof TourIndexRoute
+  KhachSanIndexRoute: typeof KhachSanIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -176,11 +137,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DatChoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/kham-pha': {
-      id: '/kham-pha'
-      path: '/kham-pha'
-      fullPath: '/kham-pha'
-      preLoaderRoute: typeof KhamPhaRouteImport
+    '/tai-khoan': {
+      id: '/tai-khoan'
+      path: '/tai-khoan'
+      fullPath: '/tai-khoan'
+      preLoaderRoute: typeof TaiKhoanRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ve': {
@@ -197,18 +158,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof YeuThichRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/blog/': {
-      id: '/blog/'
-      path: '/blog'
-      fullPath: '/blog/'
-      preLoaderRoute: typeof BlogIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blog/$slug': {
-      id: '/blog/$slug'
-      path: '/blog/$slug'
-      fullPath: '/blog/$slug'
-      preLoaderRoute: typeof BlogSlugRouteImport
+    '/khach-san/': {
+      id: '/khach-san/'
+      path: '/khach-san'
+      fullPath: '/khach-san/'
+      preLoaderRoute: typeof KhachSanIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/khach-san/$id': {
@@ -218,34 +172,17 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KhachSanIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/tour/': {
-      id: '/tour/'
-      path: '/tour'
-      fullPath: '/tour/'
-      preLoaderRoute: typeof TourIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tour/$id': {
-      id: '/tour/$id'
-      path: '/tour/$id'
-      fullPath: '/tour/$id'
-      preLoaderRoute: typeof TourIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DatChoRoute: DatChoRoute,
-  KhamPhaRoute: KhamPhaRoute,
+  TaiKhoanRoute: TaiKhoanRoute,
   VeRoute: VeRoute,
   YeuThichRoute: YeuThichRoute,
-  BlogSlugRoute: BlogSlugRoute,
   KhachSanIdRoute: KhachSanIdRoute,
-  TourIdRoute: TourIdRoute,
-  BlogIndexRoute: BlogIndexRoute,
-  TourIndexRoute: TourIndexRoute,
+  KhachSanIndexRoute: KhachSanIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

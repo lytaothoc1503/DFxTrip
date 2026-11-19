@@ -1,99 +1,93 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Shell } from "@/components/shell";
-import { formatVnd as money, getHotel, loadStays, removeStay, type Stay } from "@/lib/hotels";
-import { formatVnd, loadHolds, removeHold, tableById, type Hold } from "@/lib/services";
+import { loadBookings, removeBooking } from "@/lib/bookings";
+import { formatVnd, getHotel } from "@/lib/hotels";
+import { formatVnd as money, loadHolds, removeHold, tableById } from "@/lib/services";
 
-export const Route = createFileRoute("/dat-cho")({ component: HoldsPage });
+export const Route = createFileRoute("/dat-cho")({
+  head: () => ({
+    meta: [
+      { title: "Đặt chỗ — DFxTrip" },
+      { name: "description", content: "Chỗ phòng và vé sự kiện đang giữ trên máy này." },
+    ],
+  }),
+  component: HoldsPage,
+});
 
 function HoldsPage() {
-  const [holds, setHolds] = useState<Hold[]>([]);
-  const [stays, setStays] = useState<Stay[]>([]);
+  const [stays, setStays] = useState(loadBookings());
+  const [holds, setHolds] = useState(loadHolds());
 
   useEffect(() => {
+    setStays(loadBookings());
     setHolds(loadHolds());
-    setStays(loadStays());
   }, []);
 
   return (
-    <Shell>
-      <h1 className="display text-4xl">Đặt chỗ</h1>
-      <p className="mt-2 text-base text-muted">Chỉ lưu trên máy này. Không phải vé hay phòng đã xác nhận.</p>
+    <div className="mx-auto max-w-3xl px-4 pb-28 pt-6 sm:px-6">
+      <h1 className="font-display text-3xl font-bold sm:text-4xl">
+        Đặt chỗ <span className="italic text-primary">trên máy</span>
+      </h1>
+      <p className="mt-2 text-sm text-muted-foreground">Chưa phải phòng hay vé đã xác nhận.</p>
 
-      <h2 className="mt-8 text-2xl font-semibold">Phòng</h2>
+      <h2 className="mt-8 font-display text-2xl font-bold">Phòng</h2>
       {stays.length === 0 ? (
-        <div className="mt-4 rounded-card border border-line bg-surface p-5">
-          <p className="text-lg">Chưa giữ phòng trên máy này.</p>
-          <Link
-            to="/kham-pha"
-            className="mt-5 flex h-14 w-full items-center justify-center rounded-full bg-brand text-lg font-semibold text-on-brand"
-          >
-            Giữ phòng
-          </Link>
-        </div>
+        <p className="mt-3 text-sm text-muted-foreground">Chưa giữ phòng.</p>
       ) : (
-        <ul className="mt-4 space-y-4">
-          {stays.map((stay) => (
-            <li key={stay.id} className="rounded-card border border-line bg-surface p-5">
-              <p className="text-base font-semibold text-brand">{stay.id}</p>
-              <p className="mt-2 text-xl font-medium">{getHotel(stay.hotelId)?.name}</p>
-              <p className="mt-1 text-base text-muted">
-                {stay.room} · {stay.checkIn} – {stay.checkOut} · {stay.nights} đêm · {stay.guests} khách
-              </p>
-              <p className="mt-1 text-base">
-                {stay.name} · {stay.phone}
-              </p>
-              <p className="mt-3 text-2xl font-semibold">{money(stay.total)}</p>
-              <button
-                type="button"
-                className="mt-4 h-14 w-full rounded-full border border-line text-lg font-semibold"
-                onClick={() => setStays(removeStay(stay.id))}
-              >
-                Xóa giữ chỗ phòng
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <h2 className="mt-8 text-2xl font-semibold">Vé show</h2>
-      {holds.length === 0 ? (
-        <div className="mt-4 rounded-card border border-line bg-surface p-5">
-          <p className="text-lg">Chưa giữ vé trên máy này.</p>
-          <Link
-            to="/ve"
-            className="mt-5 flex h-14 w-full items-center justify-center rounded-full bg-brand text-lg font-semibold text-on-brand"
-          >
-            Giữ vé
-          </Link>
-        </div>
-      ) : (
-        <ul className="mt-4 space-y-4">
-          {holds.map((hold) => {
-            const table = tableById(hold.tableId);
+        <ul className="mt-3 space-y-3">
+          {stays.map((stay) => {
+            const hotel = getHotel(stay.hotelId);
             return (
-              <li key={hold.id} className="rounded-card border border-line bg-surface p-5">
-                <p className="text-base font-semibold text-brand">{hold.id}</p>
-                <p className="mt-2 text-xl font-medium">
-                  {hold.name} · {hold.phone}
+              <li key={stay.code} className="rounded-3xl border bg-card p-4">
+                <p className="font-semibold">{hotel?.name ?? stay.hotelId}</p>
+                <p className="text-sm text-muted-foreground">
+                  {stay.roomName} · {stay.checkIn} – {stay.checkOut} · {stay.guests} khách
                 </p>
-                <p className="mt-1 text-base text-muted">
-                  {hold.date} · {hold.adults} người lớn · {hold.kids} trẻ · {hold.infants} dưới 1m
-                </p>
-                <p className="mt-1 text-base">{table ? table.label : "Chưa chọn bàn sát biển"}</p>
-                <p className="mt-3 text-2xl font-semibold">{formatVnd(hold.total)}</p>
+                <p className="mt-1 font-semibold text-primary">{formatVnd(stay.total)}</p>
                 <button
                   type="button"
-                  className="mt-4 h-14 w-full rounded-full border border-line text-lg font-semibold"
-                  onClick={() => setHolds(removeHold(hold.id))}
+                  className="mt-3 text-sm font-semibold text-primary"
+                  onClick={() => setStays(removeBooking(stay.code))}
                 >
-                  Xóa giữ chỗ vé
+                  Bỏ giữ chỗ {stay.code}
                 </button>
               </li>
             );
           })}
         </ul>
       )}
-    </Shell>
+
+      <h2 className="mt-8 font-display text-2xl font-bold">Vé Symphony of the Sea</h2>
+      {holds.length === 0 ? (
+        <p className="mt-3 text-sm text-muted-foreground">
+          Chưa giữ vé.{" "}
+          <Link to="/ve" className="font-semibold text-primary">
+            Xem sự kiện Phú Quốc
+          </Link>
+        </p>
+      ) : (
+        <ul className="mt-3 space-y-3">
+          {holds.map((hold) => {
+            const table = tableById(hold.tableId);
+            return (
+              <li key={hold.id} className="rounded-3xl border bg-card p-4">
+                <p className="font-semibold">{hold.name}</p>
+                <p className="text-sm text-muted-foreground">
+                  {hold.date} · {hold.adults} người lớn · {hold.kids} trẻ · {table ? table.label : "Chưa chọn bàn"}
+                </p>
+                <p className="mt-1 font-semibold text-primary">{money(hold.total)}</p>
+                <button
+                  type="button"
+                  className="mt-3 text-sm font-semibold text-primary"
+                  onClick={() => setHolds(removeHold(hold.id))}
+                >
+                  Bỏ giữ vé {hold.id}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
   );
 }

@@ -1,0 +1,175 @@
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { cn } from "@/lib/utils";
+
+/** Fade + blur + rise when scrolled into view. */
+export function Reveal({
+  children,
+  delay = 0,
+  className,
+  as: Tag = "div",
+}: {
+  children: ReactNode;
+  delay?: number;
+  className?: string;
+  as?: "div" | "section" | "li" | "article";
+}) {
+  const ref = useRef<HTMLElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e?.isIntersecting) {
+          setVisible(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <Tag
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ref={ref as any}
+      className={cn("reveal", visible && "is-visible", className)}
+      style={{ "--delay": `${delay}ms` } as CSSProperties}
+    >
+      {children}
+    </Tag>
+  );
+}
+
+/** Words blur in one after another. */
+export function TextReveal({
+  text,
+  className,
+  wordClassName,
+  startDelay = 0,
+  step = 70,
+}: {
+  text: string;
+  className?: string;
+  wordClassName?: (i: number) => string | undefined;
+  startDelay?: number;
+  step?: number;
+}) {
+  const words = text.split(" ");
+  return (
+    <span className={className}>
+      {words.map((w, i) => (
+        <span
+          key={i}
+          className={cn("word-reveal", wordClassName?.(i))}
+          style={{ "--delay": `${startDelay + i * step}ms` } as CSSProperties}
+        >
+          {w}
+          {i < words.length - 1 ? "\u00A0" : ""}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/** Counts up to a value when visible. */
+export function NumberTicker({ value, duration = 1400 }: { value: number; duration?: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let raf = 0;
+    const io = new IntersectionObserver(([e]) => {
+      if (!e?.isIntersecting) return;
+      io.disconnect();
+      const start = performance.now();
+      const tick = (t: number) => {
+        const p = Math.min(1, (t - start) / duration);
+        const eased = 1 - Math.pow(1 - p, 4);
+        setN(Math.round(value * eased));
+        if (p < 1) raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    });
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, [value, duration]);
+  return (
+    <span ref={ref} className="tabular-nums">
+      {n.toLocaleString("vi-VN")}
+    </span>
+  );
+}
+
+/** Cursor-following spotlight + subtle 3D tilt (pointer devices only). */
+export function SpotlightCard({
+  children,
+  className,
+  tilt = true,
+}: {
+  children: ReactNode;
+  className?: string;
+  tilt?: boolean;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const onMove = (e: React.PointerEvent) => {
+    if (e.pointerType !== "mouse") return;
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    el.style.setProperty("--mx", `${x}px`);
+    el.style.setProperty("--my", `${y}px`);
+    if (tilt) {
+      const rx = (y / r.height - 0.5) * -5;
+      const ry = (x / r.width - 0.5) * 6;
+      el.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
+    }
+  };
+  const onLeave = () => {
+    if (ref.current) ref.current.style.transform = "";
+  };
+  return (
+    <div
+      ref={ref}
+      onPointerMove={onMove}
+      onPointerLeave={onLeave}
+      className={cn(
+        "spotlight transition-[transform,box-shadow] duration-500 ease-[var(--ease-out-expo)] will-change-transform",
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+/** Infinite horizontal marquee. */
+export function Marquee({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div className={cn("mask-fade-x overflow-hidden", className)}>
+      <div className="flex w-max animate-marquee gap-3 hover:[animation-play-state:paused]">
+        {children}
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/** Adds .no-vt to <html> when the browser lacks View Transitions. */
+export function useViewTransitionFallback() {
+  useEffect(() => {
+    if (
+      typeof (document as Document & { startViewTransition?: unknown }).startViewTransition !==
+      "function"
+    ) {
+      document.documentElement.classList.add("no-vt");
+    }
+  }, []);
+}

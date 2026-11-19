@@ -1,16 +1,20 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Shell } from "@/components/shell";
-import {
-  SHOW_SCHEDULE,
-  TABLES,
-  formatVnd,
-  quote,
-  saveHold,
-  type TableId,
-} from "@/lib/services";
+import { SHOW_SCHEDULE, TABLES, formatVnd, quote, saveHold, type TableId } from "@/lib/services";
 
-export const Route = createFileRoute("/ve")({ component: TicketPage });
+export const Route = createFileRoute("/ve")({
+  head: () => ({
+    meta: [
+      { title: "Symphony of the Sea — vé sự kiện Phú Quốc | DFxTrip" },
+      {
+        name: "description",
+        content:
+          "Giữ vé Symphony of the Sea tại Sun Bavaria, Phú Quốc. Người lớn 1.200.000đ hoặc 1.300.000đ. Phụ thu bàn sát biển tính theo bàn.",
+      },
+    ],
+  }),
+  component: TicketPage,
+});
 
 function Stepper({
   label,
@@ -23,20 +27,20 @@ function Stepper({
 }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-lg font-medium">{label}</span>
+      <span className="text-base font-medium">{label}</span>
       <div className="flex items-center gap-2">
         <button
           type="button"
-          className="h-14 w-14 rounded-full border border-line bg-surface text-2xl"
+          className="grid size-12 place-items-center rounded-full border bg-card text-2xl"
           onClick={() => onChange(Math.max(0, value - 1))}
           aria-label={`Giảm ${label}`}
         >
           −
         </button>
-        <span className="w-10 text-center text-2xl font-semibold">{value}</span>
+        <span className="w-8 text-center text-xl font-semibold">{value}</span>
         <button
           type="button"
-          className="h-14 w-14 rounded-full bg-brand text-2xl text-on-brand"
+          className="grid size-12 place-items-center rounded-full bg-primary text-2xl text-primary-foreground"
           onClick={() => onChange(value + 1)}
           aria-label={`Tăng ${label}`}
         >
@@ -49,7 +53,7 @@ function Stepper({
 
 function TicketPage() {
   const navigate = useNavigate();
-  const [date, setDate] = useState("2026-11-19");
+  const [date, setDate] = useState("2026-11-20");
   const [adults, setAdults] = useState(2);
   const [kids, setKids] = useState(0);
   const [infants, setInfants] = useState(0);
@@ -57,7 +61,6 @@ function TicketPage() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
-
   const price = quote({ date, adults, kids, infants, tableId });
 
   function hold() {
@@ -91,47 +94,40 @@ function TicketPage() {
   }
 
   return (
-    <Shell>
-      <p className="text-sm font-semibold text-brand">SUN BAVARIA</p>
-      <h1 className="display mt-1 text-4xl leading-tight">Giữ vé và chọn bàn sát biển</h1>
+    <div className="mx-auto max-w-3xl px-4 pb-28 pt-6 sm:px-6">
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Sự kiện Phú Quốc</p>
+      <h1 className="mt-1 font-display text-4xl font-bold leading-tight">Symphony of the Sea</h1>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Sun Bavaria, Thị trấn Hoàng Hôn. Phụ thu bàn sát biển đang chạy thử, chưa có thông báo chính thức. Khách đăng ký
+        nâng cấp tại nhà hàng.
+      </p>
 
-      <div className="mt-4 rounded-card border border-brand/30 bg-note p-4 text-base">
-        Phụ thu bàn sát biển đang chạy thử, chưa có thông báo chính thức. Khách đăng ký nâng cấp trực tiếp tại nhà hàng.
-      </div>
-
-      <section className="mt-5 overflow-hidden rounded-card border border-line bg-surface">
-        <h2 className="bg-navy px-4 py-3 text-center text-lg font-semibold text-on-navy">
-          Lịch trình xem show Symphony of the Sea
+      <section className="mt-5 overflow-hidden rounded-3xl border bg-card">
+        <h2 className="bg-secondary px-4 py-3 text-center font-semibold text-secondary-foreground">
+          Lịch trình buổi tối
         </h2>
         <ul>
           {SHOW_SCHEDULE.map((item) => (
-            <li key={item.time} className="flex gap-3 border-t border-line p-4">
-              <img src={item.image} alt="" className="h-16 w-16 shrink-0 rounded-full object-cover" />
+            <li key={item.time} className="flex gap-3 border-t p-4">
+              <img src={item.image} alt="" className="size-16 shrink-0 rounded-full object-cover" />
               <div>
-                <p className="text-lg font-semibold text-brand">{item.time}</p>
-                <p className="text-base font-medium">{item.title}</p>
-                <p className="text-sm text-muted">{item.detail}</p>
+                <p className="font-semibold text-primary">{item.time}</p>
+                <p className="font-medium">{item.title}</p>
+                <p className="text-sm text-muted-foreground">{item.detail}</p>
               </div>
             </li>
           ))}
         </ul>
-        <img
-          src="/photos/symphony-schedule.jpg"
-          alt="Poster lịch trình Symphony of the Sea tại Sun Bavaria"
-          className="w-full border-t border-line object-cover"
-        />
       </section>
 
-      <section className="mt-5 overflow-hidden rounded-card border border-line bg-surface">
-        <h2 className="bg-navy px-4 py-3 text-center font-semibold text-on-navy">Mức phụ thu theo loại bàn</h2>
-        <div className="grid grid-cols-2 bg-rose px-4 py-2 text-sm font-semibold">
-          <span>Loại bàn</span>
-          <span className="text-right">Phụ thu</span>
-        </div>
+      <section className="mt-5 overflow-hidden rounded-3xl border bg-card">
+        <h2 className="bg-secondary px-4 py-3 text-center font-semibold text-secondary-foreground">
+          Phụ thu theo loại bàn
+        </h2>
         <button
           type="button"
           onClick={() => setTableId("none")}
-          className={`grid w-full grid-cols-2 px-4 py-4 text-left text-lg ${tableId === "none" ? "bg-example" : ""}`}
+          className={`grid w-full grid-cols-2 px-4 py-4 text-left ${tableId === "none" ? "bg-accent" : ""}`}
         >
           <span>Chưa chọn bàn</span>
           <span className="text-right font-semibold">0đ</span>
@@ -141,73 +137,70 @@ function TicketPage() {
             key={table.id}
             type="button"
             onClick={() => setTableId(table.id)}
-            className={`grid w-full grid-cols-2 border-t border-line px-4 py-4 text-left text-lg ${
-              tableId === table.id ? "bg-example" : ""
-            }`}
+            className={`grid w-full grid-cols-2 border-t px-4 py-4 text-left ${tableId === table.id ? "bg-accent" : ""}`}
           >
             <span>{table.label}</span>
-            <span className="text-right text-lg font-semibold text-rose-ink">{formatVnd(table.fee)}</span>
+            <span className="text-right font-semibold text-primary">{formatVnd(table.fee)}</span>
           </button>
         ))}
       </section>
 
-      <section className="mt-6 space-y-4 rounded-card border border-line bg-surface p-4">
+      <section className="mt-6 space-y-4 rounded-3xl border bg-card p-4">
         <label className="block">
-          <span className="text-base font-medium">Ngày đến</span>
+          <span className="font-medium">Ngày đến</span>
           <input
             type="date"
             value={date}
             onChange={(event) => setDate(event.target.value)}
-            className="mt-1 h-14 w-full rounded-2xl border border-line bg-bg px-3 text-lg"
+            className="mt-1 h-12 w-full rounded-2xl border bg-background px-3"
           />
-          <span className="mt-1 block text-base text-muted">
-            {price.weekend ? "Thứ Sáu hoặc thứ Bảy" : "Chủ nhật đến thứ Năm"} · người lớn {formatVnd(price.adult)} ·
-            trẻ 1m–1,4m {formatVnd(price.kid)}
+          <span className="mt-1 block text-sm text-muted-foreground">
+            {price.weekend ? "Thứ Sáu hoặc thứ Bảy" : "Chủ nhật đến thứ Năm"} · người lớn {formatVnd(price.adult)} · trẻ
+            1m–1,4m {formatVnd(price.kid)}
           </span>
         </label>
         <Stepper label="Người lớn" value={adults} onChange={setAdults} />
         <Stepper label="Trẻ 1m–1,4m" value={kids} onChange={setKids} />
         <Stepper label="Trẻ dưới 1m" value={infants} onChange={setInfants} />
-        <p className="text-base text-muted">Trẻ dưới 1m miễn phí và không tính vào chỗ ngồi của bàn.</p>
+        <p className="text-sm text-muted-foreground">Trẻ dưới 1m miễn phí và không tính vào chỗ ngồi của bàn.</p>
         <label className="block">
-          <span className="text-base font-medium">Tên của quý khách</span>
+          <span className="font-medium">Tên của quý khách</span>
           <input
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className="mt-1 h-14 w-full rounded-2xl border border-line bg-bg px-3 text-lg"
+            className="mt-1 h-12 w-full rounded-2xl border bg-background px-3"
           />
         </label>
         <label className="block">
-          <span className="text-base font-medium">Số điện thoại</span>
+          <span className="font-medium">Số điện thoại</span>
           <input
             inputMode="tel"
             value={phone}
             onChange={(event) => setPhone(event.target.value)}
-            className="mt-1 h-14 w-full rounded-2xl border border-line bg-bg px-3 text-lg"
+            className="mt-1 h-12 w-full rounded-2xl border bg-background px-3"
           />
         </label>
-        {error ? <p className="text-base font-medium text-brand">{error}</p> : null}
-        <div className="space-y-1 text-base">
-          <p className="flex justify-between">
-            <span>Vé</span>
-            <span>{formatVnd(price.ticket)}</span>
-          </p>
-          <p className="flex justify-between">
-            <span>Phụ thu bàn</span>
-            <span>{formatVnd(price.fee)}</span>
-          </p>
-          <p className="flex justify-between text-xl font-semibold">
-            <span>Tổng</span>
-            <span>{formatVnd(price.total)}</span>
-          </p>
-        </div>
-        <button type="button" onClick={hold} className="h-14 w-full rounded-full bg-brand text-lg font-semibold text-on-brand">
+        {error ? <p className="text-sm font-medium text-primary">{error}</p> : null}
+        <p className="flex justify-between text-sm">
+          <span>Vé</span>
+          <span>{formatVnd(price.ticket)}</span>
+        </p>
+        <p className="flex justify-between text-sm">
+          <span>Phụ thu bàn</span>
+          <span>{formatVnd(price.fee)}</span>
+        </p>
+        <p className="flex justify-between text-lg font-semibold">
+          <span>Tổng</span>
+          <span>{formatVnd(price.total)}</span>
+        </p>
+        <button
+          type="button"
+          onClick={hold}
+          className="flex h-14 w-full items-center justify-center rounded-full bg-[image:var(--gradient-primary)] text-base font-semibold text-primary-foreground"
+        >
           Giữ vé trên máy này
         </button>
-        <p className="text-base text-muted">
-          Chưa trừ tiền và chưa giữ bàn thật. Nâng cấp bàn sát biển vẫn đăng ký tại nhà hàng.
-        </p>
       </section>
-    </Shell>
+    </div>
   );
 }
