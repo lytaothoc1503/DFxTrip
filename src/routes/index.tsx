@@ -125,7 +125,7 @@ function Home() {
         <ul className="mt-4 space-y-4">
           {featuredTours.map((tour) => (
             <li key={tour.id} className="overflow-hidden rounded-card bg-surface">
-              <img src={tour.image} alt="" className="h-40 w-full object-cover" />
+              <img src={tour.image} alt={tour.name} className="h-40 w-full object-cover" />
               <div className="space-y-2 p-4">
                 <p className="text-xl font-semibold">{tour.name}</p>
                 <p className="text-base text-muted">

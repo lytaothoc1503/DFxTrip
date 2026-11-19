@@ -1,24 +1,41 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Shell } from "@/components/shell";
 import { TOURS, TOUR_CATEGORY_LABEL, formatVnd } from "@/lib/hotels";
+import { TOUR_LIST_DESCRIPTION, TOUR_LIST_TITLE } from "@/lib/tour-seo";
 
-export const Route = createFileRoute("/tour/")({ component: ToursPage });
+export const Route = createFileRoute("/tour/")({
+  head: () => ({
+    meta: [
+      { title: TOUR_LIST_TITLE },
+      { name: "description", content: TOUR_LIST_DESCRIPTION },
+      { property: "og:title", content: TOUR_LIST_TITLE },
+      { property: "og:description", content: TOUR_LIST_DESCRIPTION },
+      { property: "og:type", content: "website" },
+      { property: "og:locale", content: "vi_VN" },
+    ],
+  }),
+  component: ToursPage,
+});
 
 function ToursPage() {
   return (
     <Shell>
       <h1 className="display text-4xl">Tour</h1>
-      <p className="mt-2 text-base text-muted">Dữ liệu mẫu từ catalogue DFxTrip. Giữ chỗ tour sẽ bổ sung sau.</p>
+      <p className="mt-2 text-base text-muted">{TOUR_LIST_DESCRIPTION}</p>
       <ul className="mt-5 space-y-4">
         {TOURS.map((tour) => (
           <li key={tour.id} className="overflow-hidden rounded-card bg-surface">
-            <img src={tour.image} alt="" className="h-44 w-full object-cover" />
+            <img src={tour.image} alt={tour.name} className="h-44 w-full object-cover" />
             <div className="space-y-2 p-4">
               <p className="text-sm font-semibold text-brand">
                 {TOUR_CATEGORY_LABEL[tour.category]}
                 {tour.badge ? ` · ${tour.badge}` : ""}
               </p>
-              <p className="text-xl font-semibold leading-snug">{tour.name}</p>
+              <h2 className="text-xl font-semibold leading-snug">
+                <Link to="/tour/$id" params={{ id: tour.id }}>
+                  {tour.name}
+                </Link>
+              </h2>
               <p className="text-base text-muted">
                 {tour.duration} · từ {tour.departFrom} · {tour.rating}
               </p>

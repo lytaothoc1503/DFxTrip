@@ -1,8 +1,35 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { Shell } from "@/components/shell";
 import { TOUR_CATEGORY_LABEL, formatVnd, getTour, tourTotal } from "@/lib/hotels";
+import { tourJsonLd, tourMetaDescription, tourPageTitle } from "@/lib/tour-seo";
 
-export const Route = createFileRoute("/tour/$id")({ component: TourDetail });
+export const Route = createFileRoute("/tour/$id")({
+  head: ({ params }) => {
+    const tour = getTour(params.id);
+    if (!tour) {
+      return { meta: [{ title: "Không thấy tour | VinaStay" }, { name: "robots", content: "noindex" }] };
+    }
+    const title = tourPageTitle(tour);
+    const description = tourMetaDescription(tour);
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "website" },
+        { property: "og:locale", content: "vi_VN" },
+        { property: "og:image", content: tour.image },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        { name: "twitter:image", content: tour.image },
+      ],
+      scripts: [{ type: "application/ld+json", children: JSON.stringify(tourJsonLd(tour)) }],
+    };
+  },
+  component: TourDetail,
+});
 
 function TourDetail() {
   const { id } = useParams({ from: "/tour/$id" });
@@ -23,7 +50,7 @@ function TourDetail() {
 
   return (
     <Shell>
-      <img src={tour.image} alt="" className="h-56 w-full rounded-card object-cover" />
+      <img src={tour.image} alt={tour.name} className="h-56 w-full rounded-card object-cover" />
       <p className="mt-4 text-sm font-semibold text-brand">
         {TOUR_CATEGORY_LABEL[tour.category]}
         {tour.season ? ` · ${tour.season}` : ""}
