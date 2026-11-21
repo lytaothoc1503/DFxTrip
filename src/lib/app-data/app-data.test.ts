@@ -383,6 +383,29 @@ describe("redirectToLoginIfRequired", () => {
     assert.equal(target, "");
   });
 
+  it("refuses a non-gate loginUrl (open-redirect guard)", () => {
+    let target = "";
+    const did = withWindow(
+      {
+        location: {
+          assign: (u) => {
+            target = u;
+          },
+          href: "https://my-app.grok.me/current",
+        },
+      },
+      () =>
+        redirectToLoginIfRequired({
+          ok: false,
+          data: null,
+          loginRequired: true,
+          loginUrl: "https://evil.example/phish",
+        }),
+    );
+    assert.equal(did, false);
+    assert.equal(target, "");
+  });
+
   it("returns false on the server (no window)", () => {
     const did = redirectToLoginIfRequired({
       ok: false,

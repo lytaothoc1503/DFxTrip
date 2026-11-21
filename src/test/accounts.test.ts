@@ -58,4 +58,20 @@ describe("DFxTrip pricing", () => {
     );
     assert.equal(vietQrUrl({ bank: "MB", account: "", name: "A" }, 1000, "DFX"), "");
   });
+
+  it("keeps hotel catalog prices aligned with server hotel_rates seed", () => {
+    const expected = {
+      "dalat-wonder": 1_250_000,
+      "swiss-belresort": 1_450_000,
+      "azurea-cam-ranh": 2_450_000,
+      "banla-sapa": 1_290_000,
+      "lava-dalat": 1_150_000,
+      "metropole-hanoi": 1_890_000,
+    };
+    for (const [id, price] of Object.entries(expected)) {
+      const hotel = HOTELS.find((row) => row.id === id);
+      assert.ok(hotel, id);
+      assert.equal(hotel.price, price);
+    }
+  });
 });

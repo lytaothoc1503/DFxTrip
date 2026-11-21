@@ -407,7 +407,8 @@ function HotelDetail() {
                             roomTier: Math.max(0, ROOMS.findIndex((room) => room.name === booking.room.name)),
                             nights,
                             guests: STAY.guests,
-                            basePrice: hotel.price,
+                            checkIn: STAY.checkIn,
+                            checkOut: STAY.checkOut,
                           },
                         });
                       } catch {

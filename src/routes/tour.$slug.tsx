@@ -81,7 +81,6 @@ function TourDetail() {
             productId: tour.code,
             adults: guests,
             children: 0,
-            basePrice: tour.price,
             guestName: name.trim(),
             guestPhone: phone.trim(),
           },

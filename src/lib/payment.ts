@@ -132,7 +132,7 @@ export function paymentByRef(ref: string) {
 export function createPayment(input: { kind: Payment["kind"]; ref: string; title: string; amount: number }) {
   const existing = paymentByRef(input.ref);
   if (existing) return existing;
-  const code = `PAY${Date.now().toString().slice(-6)}`;
+  const code = `PAY${crypto.randomUUID().replace(/-/g, "").slice(0, 10).toUpperCase()}`;
   const payment: Payment = {
     code,
     kind: input.kind,

@@ -100,12 +100,28 @@ type PopupMessage = { source: "grok-auth-popup"; token: string | null; error?: s
  * Either way it clears any existing local session FIRST so switching providers
  * actually switches identity.
  */
+/**
+ * Allow only same-origin relative paths for post-auth navigation.
+ * Absolute and protocol-relative URLs are rejected to prevent open redirects.
+ */
+function sameOriginPath(url: string, origin: string): string | null {
+  if (!url.startsWith("/") || url.startsWith("//")) return null;
+  try {
+    const dest = new URL(url, origin);
+    if (dest.origin !== origin) return null;
+    return `${dest.pathname}${dest.search}${dest.hash}`;
+  } catch {
+    return null;
+  }
+}
+
 export async function signIn(
   providerId: string,
   opts: { callbackURL?: string; errorCallbackURL?: string } = {},
 ): Promise<void> {
-  const callbackURL = opts.callbackURL ?? "/";
-  const errorCallbackURL = opts.errorCallbackURL ?? "/";
+  const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost";
+  const callbackURL = sameOriginPath(opts.callbackURL ?? "/", origin) ?? "/";
+  const errorCallbackURL = sameOriginPath(opts.errorCallbackURL ?? "/", origin) ?? "/";
 
   // Open the popup SYNCHRONOUSLY on the user gesture — before any await
   // (including signOut). Awaiting first drops user-gesture privilege in some
@@ -223,6 +239,8 @@ function waitForPopupToken(popup: Window): Promise<string | null> {
  * preview the local clear is sufficient, so it always resolves.
  */
 export async function signOut(redirectTo = "/"): Promise<void> {
+  const safeRedirect =
+    sameOriginPath(redirectTo, window.location.origin) ?? "/";
   await runSignOut({
     livePreview: inLivePreview(),
     hasBearer: Boolean(getBearerToken()),
@@ -234,7 +252,7 @@ export async function signOut(redirectTo = "/"): Promise<void> {
     },
     clearToken: () => setBearerToken(null),
     redirect: () => {
-      window.location.href = redirectTo;
+      window.location.href = safeRedirect;
     },
   });
 }
