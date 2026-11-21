@@ -4,14 +4,16 @@ import { authClient, GROK_PROVIDERS, signIn, signOut } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { listMyBookings, type AccountBooking } from "@/lib/service-bookings";
 import { formatVnd } from "@/lib/services";
+import { pageTitle, seoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/tai-khoan")({
-  head: () => ({
-    meta: [
-      { title: "Tài khoản — DFxTrip" },
-      { name: "description", content: "Đăng nhập để lưu phòng và vé vào tài khoản." },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      title: pageTitle("Tài khoản"),
+      description: "Đăng nhập để lưu phòng và vé vào tài khoản.",
+      path: "/tai-khoan",
+      noindex: true,
+    }),
   component: AccountPage,
 });
 

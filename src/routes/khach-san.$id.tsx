@@ -31,6 +31,8 @@ import { HeartButton, imgTransition, Stars } from "@/components/site/hotel-card"
 import { Reveal, SpotlightCard } from "@/components/fx/effects";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { hotelJsonLd, pageTitle, seoHead } from "@/lib/seo";
+import { imgProps } from "@/lib/images";
 
 export const Route = createFileRoute("/khach-san/$id")({
   loader: ({ params }) => {
@@ -39,18 +41,21 @@ export const Route = createFileRoute("/khach-san/$id")({
     return { hotel };
   },
   head: ({ loaderData }) => {
-    const title = loaderData ? `${loaderData.hotel.name} — DFxTrip` : "Khách sạn — DFxTrip";
-    const desc = loaderData?.hotel.description ?? "Chi tiết khách sạn trên DFxTrip.";
-    return {
-      meta: [
-        { title },
-        { name: "description", content: desc },
-        { property: "og:title", content: title },
-        { property: "og:description", content: desc },
-        { property: "og:type", content: "website" },
-        { name: "twitter:card", content: "summary_large_image" },
-      ],
-    };
+    const hotel = loaderData?.hotel;
+    if (!hotel) {
+      return seoHead({
+        title: pageTitle("Không tìm thấy khách sạn"),
+        description: "Khách sạn này không có trên DFxTrip.",
+        path: "/khach-san",
+        noindex: true,
+      });
+    }
+    return seoHead({
+      title: pageTitle(hotel.name),
+      description: `${hotel.description} Giá từ ${formatVnd(hotel.price)} mỗi đêm tại ${hotel.city}.`,
+      path: `/khach-san/${hotel.id}`,
+      jsonLd: hotelJsonLd(hotel),
+    });
   },
   notFoundComponent: () => (
     <div className="mx-auto max-w-md px-4 py-24 text-center">
@@ -92,10 +97,8 @@ function HotelDetail() {
           {hotel.gallery.map((src, i) => (
             <img
               key={i}
-              src={src}
+              {...imgProps(src, "100vw")}
               alt={`${hotel.name} ảnh ${i + 1}`}
-              width={1024}
-              height={768}
               loading={i === 0 ? "eager" : "lazy"}
               decoding="async"
               style={i === 0 ? imgTransition(hotel.id) : undefined}
@@ -127,14 +130,14 @@ function HotelDetail() {
       {/* Desktop gallery: bento */}
       <div className="hidden h-[460px] grid-cols-4 grid-rows-2 gap-3 md:grid">
         <button
+          type="button"
           onClick={() => setLightbox(true)}
           className="group relative col-span-2 row-span-2 overflow-hidden rounded-3xl"
         >
           <img
-            src={hotel.gallery[0]}
+            {...imgProps(hotel.gallery[0]!, "(min-width: 768px) 50vw, 100vw")}
             alt={hotel.name}
-            width={1024}
-            height={768}
+            decoding="async"
             style={imgTransition(hotel.id)}
             className="size-full object-cover transition-transform duration-[1.4s] ease-[var(--ease-out-expo)] group-hover:scale-105"
           />
@@ -148,16 +151,16 @@ function HotelDetail() {
         {hotel.gallery.slice(1, 5).map((src, i) => (
           <button
             key={i}
+            type="button"
             onClick={() => setLightbox(true)}
             className="group overflow-hidden rounded-2xl"
             style={{ animation: `vt-in 0.8s var(--ease-out-expo) ${200 + i * 90}ms both` }}
           >
             <img
-              src={src}
+              {...imgProps(src, "(min-width: 768px) 22vw, 100vw")}
               alt={`${hotel.name} ảnh ${i + 2}`}
               loading="lazy"
-              width={1024}
-              height={768}
+              decoding="async"
               className="size-full object-cover transition-transform duration-[1.2s] ease-[var(--ease-out-expo)] group-hover:scale-110"
             />
           </button>
@@ -237,11 +240,10 @@ function HotelDetail() {
                     <div className="group flex h-full gap-3 rounded-2xl border bg-card p-3 shadow-[var(--shadow-soft)] transition-shadow hover:shadow-[var(--shadow-lift)] sm:flex-col lg:flex-col">
                       <div className="w-28 shrink-0 overflow-hidden rounded-xl sm:w-full">
                         <img
-                          src={room.image}
+                          {...imgProps(room.image, "(min-width: 1024px) 360px, (min-width: 640px) 40vw, 112px")}
                           alt={room.name}
                           loading="lazy"
-                          width={1024}
-                          height={768}
+                          decoding="async"
                           className="aspect-square size-full object-cover transition-transform duration-[1.2s] group-hover:scale-110 sm:aspect-[16/10]"
                         />
                       </div>
@@ -318,11 +320,10 @@ function HotelDetail() {
             {hotel.gallery.map((src, i) => (
               <img
                 key={i}
-                src={src}
+                {...imgProps(src, i === 0 ? "(min-width: 640px) 960px, 100vw" : "(min-width: 640px) 480px, 100vw")}
                 alt={`${hotel.name} ảnh ${i + 1}`}
                 loading="lazy"
-                width={1024}
-                height={768}
+                decoding="async"
                 className={"w-full rounded-2xl object-cover " + (i === 0 ? "sm:col-span-2" : "")}
                 style={{ animation: `vt-in 0.7s var(--ease-out-expo) ${i * 80}ms both` }}
               />
@@ -341,10 +342,9 @@ function HotelDetail() {
               </DialogHeader>
               <div className="flex gap-3">
                 <img
-                  src={booking.room.image}
+                  {...imgProps(booking.room.image, "80px")}
                   alt={booking.room.name}
-                  width={1024}
-                  height={768}
+                  decoding="async"
                   className="size-20 rounded-xl object-cover"
                 />
                 <div>

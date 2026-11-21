@@ -1,14 +1,14 @@
-import hotel1 from "@/assets/hotel-1.webp";
-import hotel2 from "@/assets/hotel-2.webp";
-import hotel3 from "@/assets/hotel-3.webp";
-import hotel4 from "@/assets/hotel-4.webp";
-import hotel5 from "@/assets/hotel-5.webp";
-import hotel6 from "@/assets/hotel-6.webp";
-import room1 from "@/assets/room-1.webp";
-import room2 from "@/assets/room-2.webp";
-import room3 from "@/assets/room-3.webp";
-import bathroom from "@/assets/bathroom.webp";
-import breakfast from "@/assets/breakfast.webp";
+const hotel1 = "/photos/hotel-1.webp";
+const hotel2 = "/photos/hotel-2.webp";
+const hotel3 = "/photos/hotel-3.webp";
+const hotel4 = "/photos/hotel-4.webp";
+const hotel5 = "/photos/hotel-5.webp";
+const hotel6 = "/photos/hotel-6.webp";
+const room1 = "/photos/room-1.webp";
+const room2 = "/photos/room-2.webp";
+const room3 = "/photos/room-3.webp";
+const bathroom = "/photos/bathroom.webp";
+const breakfast = "/photos/breakfast.webp";
 
 export type Room = {
   id: string;

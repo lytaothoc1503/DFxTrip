@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { MapPin, Search, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HOTELS, formatVnd } from "@/lib/hotels";
+import { imgProps } from "@/lib/images";
 
 /** Starts true once the element enters the viewport (one-shot). */
 function useInView<T extends HTMLElement>(threshold = 0.35) {
@@ -132,9 +133,10 @@ export function CinematicShowcase() {
                 style={{ "--d": `${400 + i * 160}ms` } as CSSProperties}
               >
                 <img
-                  src={h.image}
+                  {...imgProps(h.image, "48px")}
                   alt={h.name}
                   loading="lazy"
+                  decoding="async"
                   className="size-12 rounded-lg object-cover"
                 />
                 <div className="min-w-0 flex-1">

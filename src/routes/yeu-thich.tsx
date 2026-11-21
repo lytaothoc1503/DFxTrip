@@ -7,19 +7,17 @@ import { HotelCard } from "@/components/site/hotel-card";
 import { TourCard } from "@/components/site/tour-card";
 import { Reveal } from "@/components/fx/effects";
 import { Button } from "@/components/ui/button";
+import { pageTitle, seoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/yeu-thich")({
   loader: () => listTours(),
-  head: () => ({
-    meta: [
-      { title: "Yêu thích — DFxTrip" },
-      { name: "description", content: "Danh sách khách sạn bạn đã lưu trên DFxTrip." },
-      { property: "og:title", content: "Yêu thích — DFxTrip" },
-      { property: "og:description", content: "Danh sách khách sạn bạn đã lưu trên DFxTrip." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      title: pageTitle("Yêu thích"),
+      description: "Danh sách khách sạn và tour đã lưu trên máy này.",
+      path: "/yeu-thich",
+      noindex: true,
+    }),
   component: FavoritesPage,
 });
 

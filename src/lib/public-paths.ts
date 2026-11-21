@@ -18,13 +18,12 @@ const TOUR_SLUGS = [
   "xe-ha-noi-cat-ba-cap-treo",
 ];
 
-/** Trang công khai cho sitemap. Không gồm tài khoản và mã thanh toán. */
+/** Trang được lập chỉ mục. Không gồm tài khoản, yêu thích, giữ chỗ hay thanh toán. */
 export const PUBLIC_PATHS = [
   "/",
   "/tour",
   "/khach-san",
   "/ve",
-  "/dat-cho",
   ...HOTELS.map((hotel) => `/khach-san/${hotel.id}`),
   ...TOUR_SLUGS.map((slug) => `/tour/${slug}`),
 ];

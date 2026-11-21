@@ -1,12 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, LayoutGrid, List, SlidersHorizontal, X } from "lucide-react";
 import { useMemo, useState } from "react";
-import { HOTELS } from "@/lib/hotels";
+import { HOTELS, DESTINATIONS } from "@/lib/hotels";
 import { HotelCard, HotelRow } from "@/components/site/hotel-card";
 import { DEFAULT_FILTERS, Filters, type FilterState } from "@/components/site/filters";
 import { NumberTicker, Reveal } from "@/components/fx/effects";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { hotelListJsonLd, pageTitle, seoHead } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
 type Search = { dest?: string };
@@ -16,22 +17,23 @@ export const Route = createFileRoute("/khach-san/")({
     const d = s["dest"];
     return typeof d === "string" && d ? { dest: d } : {};
   },
-  head: () => ({
-    meta: [
-      { title: "Tìm khách sạn — DFxTrip" },
-      {
-        name: "description",
-        content: "Lọc khách sạn theo giá, hạng sao và tiện ích trên DFxTrip.",
-      },
-      { property: "og:title", content: "Tìm khách sạn — DFxTrip" },
-      {
-        property: "og:description",
-        content: "Lọc khách sạn theo giá, hạng sao và tiện ích trên DFxTrip.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: ({ match }) => {
+    const dest = typeof match.search.dest === "string" ? match.search.dest : "";
+    const known = (DESTINATIONS as readonly string[]).includes(dest);
+    const listed = known
+      ? HOTELS.filter((hotel) => `${hotel.city} ${hotel.area}`.toLowerCase().includes(dest.toLowerCase()))
+      : HOTELS;
+    const title = known ? pageTitle(`Khách sạn ${dest}`) : pageTitle("Tìm khách sạn");
+    const description = known
+      ? `${listed.length} chỗ nghỉ tại ${dest}. Giá niêm yết mỗi đêm, lọc theo hạng sao và tiện ích.`
+      : "Lọc khách sạn Đà Lạt, Nha Trang, Sapa và Hà Nội theo giá, hạng sao và tiện ích.";
+    return seoHead({
+      title,
+      description,
+      path: known ? `/khach-san?dest=${encodeURIComponent(dest)}` : "/khach-san",
+      jsonLd: hotelListJsonLd(listed, title),
+    });
+  },
   component: SearchPage,
 });
 
@@ -80,11 +82,11 @@ function SearchPage() {
         </Link>
         <div className="min-w-0">
           <h1 className="truncate font-display text-2xl font-bold sm:text-4xl">
-            {dest ?? "Tất cả điểm đến"}
+            {dest ? `Khách sạn ${dest}` : "Tất cả điểm đến"}
           </h1>
           <p className="text-sm text-muted-foreground">
             <span className="font-semibold text-foreground">
-              <NumberTicker key={results.length} value={results.length * 37 + 12} duration={900} />
+              <NumberTicker key={results.length} value={results.length} duration={700} />
             </span>{" "}
             chỗ nghỉ · 20 – 22 Th11 · 2 khách
           </p>

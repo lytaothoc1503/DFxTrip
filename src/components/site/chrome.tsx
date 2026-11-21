@@ -2,7 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Bell, CalendarCheck, Globe, Heart, Home, Search, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { BRAND } from "@/lib/brand";
+import { BRAND, phoneHref } from "@/lib/brand";
 import { Button } from "@/components/ui/button";
 
 export function Logo({ light = false }: { light?: boolean }) {
@@ -63,13 +63,14 @@ export function SiteHeader() {
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
         <Logo />
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden items-center gap-1 md:flex" aria-label="Menu chính">
           {NAV.map((n) => {
             const active = n.to === "/" ? pathname === "/" : pathname.startsWith(n.to);
             return (
               <Link
                 key={n.to}
                 to={n.to}
+                aria-current={active ? "page" : undefined}
                 className={cn(
                   "relative rounded-full px-4 py-2 text-sm font-medium transition-colors",
                   active ? "text-primary" : "text-foreground/80 hover:text-foreground",
@@ -90,14 +91,18 @@ export function SiteHeader() {
           <Link to="/tour" className="rounded-full px-3 py-2 text-sm font-semibold text-primary md:hidden">
             Tour
           </Link>
-          <button className="hidden items-center gap-1 rounded-full px-3 py-2 text-sm font-medium text-foreground/80 hover:bg-muted sm:flex">
-            <Globe className="size-4" /> VN
+          <button
+            type="button"
+            className="hidden items-center gap-1 rounded-full px-3 py-2 text-sm font-medium text-foreground/80 hover:bg-muted sm:flex"
+          >
+            <Globe className="size-4" aria-hidden /> VN
           </button>
           <button
+            type="button"
             aria-label="Thông báo"
             className="relative grid size-10 place-items-center rounded-full text-foreground/80 hover:bg-muted md:hidden"
           >
-            <Bell className="size-5" />
+            <Bell className="size-5" aria-hidden />
             <span className="absolute right-2.5 top-2.5 size-2 animate-pulse rounded-full bg-primary" />
           </button>
           <Button asChild variant="hero" className="hidden md:inline-flex">
@@ -148,6 +153,7 @@ export function TabBar() {
             <Link
               key={t.to}
               to={t.to}
+              aria-current={active ? "page" : undefined}
               className={cn(
                 "relative z-10 flex flex-col items-center gap-0.5 rounded-2xl py-2 text-[11px] font-medium transition-colors",
                 active ? "text-accent-foreground" : "text-muted-foreground",
@@ -159,6 +165,7 @@ export function TabBar() {
                   active && "-translate-y-0.5 scale-110",
                 )}
                 strokeWidth={active ? 2.4 : 1.8}
+                aria-hidden
               />
               {t.label}
             </Link>
@@ -175,7 +182,11 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 sm:px-6 md:flex-row md:items-center md:justify-between">
         <Logo />
         <p className="text-sm text-muted-foreground">
-          DFxTrip giữ chỗ trên máy này, chưa phải xác nhận. Gọi {BRAND.phoneDisplay}.
+          DFxTrip giữ chỗ trên máy này, chưa phải xác nhận. Gọi{" "}
+          <a href={phoneHref()} className="font-semibold text-primary">
+            {BRAND.phoneDisplay}
+          </a>
+          .
         </p>
       </div>
     </footer>

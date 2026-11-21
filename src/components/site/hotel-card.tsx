@@ -5,14 +5,35 @@ import { cn } from "@/lib/utils";
 import { formatVnd, ratingLabel, type Hotel } from "@/lib/hotels";
 import { toggleFavorite, useFavorites } from "@/lib/favorites";
 import { SpotlightCard } from "@/components/fx/effects";
+import { imgProps } from "@/lib/images";
 
-export function Stars({ n, className }: { n: number; className?: string }) {
+export function Stars({
+  n,
+  className,
+  iconClassName,
+  decorative = false,
+}: {
+  n: number;
+  className?: string;
+  iconClassName?: string;
+  decorative?: boolean;
+}) {
   return (
-    <span className={cn("inline-flex items-center gap-0.5", className)} aria-label={`${n} sao`}>
+    <span
+      className={cn("inline-flex items-center gap-0.5", className)}
+      {...(decorative
+        ? { "aria-hidden": true }
+        : { role: "img" as const, "aria-label": `${n} trên 5 sao` })}
+    >
       {Array.from({ length: 5 }).map((_, i) => (
         <Star
           key={i}
-          className={cn("size-3.5", i < n ? "fill-star text-star" : "fill-muted text-muted")}
+          aria-hidden
+          className={cn(
+            "size-3.5",
+            i < n ? "fill-star text-star" : "fill-muted text-muted",
+            iconClassName,
+          )}
         />
       ))}
     </span>
@@ -64,12 +85,11 @@ export function HotelCard({ hotel, eager }: { hotel: Hotel; eager?: boolean }) {
       >
         <div className="relative aspect-[4/3] overflow-hidden">
           <img
-            src={hotel.image}
+            {...imgProps(hotel.image, "(min-width: 1280px) 360px, (min-width: 768px) 46vw, 92vw")}
             alt={hotel.name}
-            width={1024}
-            height={768}
             decoding="async"
             loading={eager ? "eager" : "lazy"}
+            fetchPriority={eager ? "high" : "auto"}
             style={imgTransition(hotel.id)}
             className="size-full object-cover transition-transform duration-[1.2s] ease-[var(--ease-out-expo)] group-hover:scale-110"
           />
@@ -92,7 +112,7 @@ export function HotelCard({ hotel, eager }: { hotel: Hotel; eager?: boolean }) {
             <span>({hotel.reviews.toLocaleString("vi-VN")} đánh giá)</span>
           </div>
           <p className="flex items-center gap-1 text-sm text-muted-foreground">
-            <MapPin className="size-3.5" /> {hotel.area}
+            <MapPin className="size-3.5" aria-hidden /> {hotel.area}
           </p>
           <div className="flex flex-wrap gap-1.5">
             {hotel.tags.map((t) => (
@@ -116,7 +136,7 @@ export function HotelCard({ hotel, eager }: { hotel: Hotel; eager?: boolean }) {
             </div>
             <span className="shine inline-flex h-10 items-center gap-1.5 rounded-lg bg-[image:var(--gradient-primary)] px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)]">
               Xem phòng
-              <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+              <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
             </span>
           </div>
         </div>
@@ -136,11 +156,10 @@ export function HotelRow({ hotel }: { hotel: Hotel }) {
     >
       <div className="relative w-32 shrink-0 overflow-hidden rounded-xl">
         <img
-          src={hotel.image}
+          {...imgProps(hotel.image, "128px")}
           alt={hotel.name}
-          width={1024}
-          height={768}
           loading="lazy"
+          decoding="async"
           style={imgTransition(hotel.id)}
           className="size-full object-cover"
         />
@@ -153,12 +172,12 @@ export function HotelRow({ hotel }: { hotel: Hotel }) {
       <div className="flex min-w-0 flex-1 flex-col py-0.5">
         <h3 className="line-clamp-1 font-display text-base font-semibold">{hotel.name}</h3>
         <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
-          <Star className="size-3.5 fill-star text-star" />
+          <Star className="size-3.5 fill-star text-star" aria-hidden />
           <span className="font-semibold text-foreground">{hotel.rating.toFixed(1)}</span>(
           {hotel.reviews.toLocaleString("vi-VN")})
         </p>
         <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-muted-foreground">
-          <MapPin className="size-3 shrink-0" /> {hotel.area}
+          <MapPin className="size-3 shrink-0" aria-hidden /> {hotel.area}
         </p>
         <div className="mt-auto flex items-end justify-between pt-1">
           <p className="text-base font-bold text-primary">

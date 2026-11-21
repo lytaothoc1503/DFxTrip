@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from "re
 import { cn } from "@/lib/utils";
 import { formatVnd, HOTELS, ratingLabel, type Hotel } from "@/lib/hotels";
 import { HeartButton, imgTransition } from "@/components/site/hotel-card";
+import { imgProps } from "@/lib/images";
 
 /* ------------------------------------------------------------------ */
 /* Segmented progress bars (shared by hero + stories)                  */
@@ -88,10 +89,9 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
         {slides.map((sl, idx) => (
           <img
             key={sl.img}
-            src={sl.img}
-            alt={sl.caption}
-            width={1280}
-            height={726}
+            {...imgProps(sl.img, "100vw")}
+            alt=""
+            aria-hidden
             decoding="async"
             fetchPriority={idx === 0 ? "high" : "low"}
             loading={idx === 0 ? "eager" : "lazy"}
@@ -106,6 +106,8 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
 
       <div
         className="mx-auto mt-6 flex max-w-md items-center gap-3 md:mt-8"
+        role="group"
+        aria-label="Ảnh điểm đến"
         onPointerEnter={(e) => e.pointerType === "mouse" && setPaused(true)}
         onPointerLeave={() => setPaused(false)}
       >
@@ -115,14 +117,14 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
           aria-label="Ảnh trước"
           className="glass-dark grid size-8 shrink-0 place-items-center rounded-full transition-transform active:scale-90"
         >
-          <ChevronLeft className="size-4" />
+          <ChevronLeft className="size-4" aria-hidden />
         </button>
         <div className="min-w-0 flex-1">
           <p
             key={s.city}
             className="word-reveal mb-2 flex items-center justify-center gap-1 truncate text-xs font-semibold text-on-image"
           >
-            <MapPin className="size-3.5 shrink-0" /> {s.caption}
+            <MapPin className="size-3.5 shrink-0" aria-hidden /> {s.caption}
           </p>
           <ProgressBars
             count={slides.length}
@@ -139,7 +141,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
           aria-label="Ảnh tiếp"
           className="glass-dark grid size-8 shrink-0 place-items-center rounded-full transition-transform active:scale-90"
         >
-          <ChevronRight className="size-4" />
+          <ChevronRight className="size-4" aria-hidden />
         </button>
       </div>
     </>
@@ -210,10 +212,9 @@ function CoverSlide({ hotel }: { hotel: Hotel }) {
         className="group relative block aspect-[4/5] overflow-hidden rounded-[1.75rem] shadow-[var(--shadow-lift)]"
       >
         <img
-          src={hotel.image}
+          {...imgProps(hotel.image, "(min-width: 1024px) 30vw, (min-width: 640px) 46vw, 76vw")}
           alt={hotel.name}
-          width={1024}
-          height={768}
+          decoding="async"
           loading="lazy"
           draggable={false}
           style={imgTransition(hotel.id)}
@@ -239,7 +240,7 @@ function CoverSlide({ hotel }: { hotel: Hotel }) {
 
         <div className="glass-dark absolute inset-x-3 bottom-3 rounded-2xl p-3.5">
           <div className="flex items-center gap-1.5 text-[11px] font-semibold opacity-90">
-            <Star className="size-3.5 fill-star text-star" />
+            <Star className="size-3.5 fill-star text-star" aria-hidden />
             {hotel.rating.toFixed(1)} · {ratingLabel(hotel.rating)}
             <span className="opacity-70">({hotel.reviews.toLocaleString("vi-VN")})</span>
           </div>
@@ -247,7 +248,7 @@ function CoverSlide({ hotel }: { hotel: Hotel }) {
             {hotel.name}
           </h3>
           <p className="mt-0.5 flex items-center gap-1 truncate text-xs opacity-80">
-            <MapPin className="size-3 shrink-0" /> {hotel.area}
+            <MapPin className="size-3 shrink-0" aria-hidden /> {hotel.area}
           </p>
           <div className="mt-2.5 flex items-end justify-between">
             <p className="text-lg font-bold">
@@ -255,7 +256,7 @@ function CoverSlide({ hotel }: { hotel: Hotel }) {
               <span className="text-[11px] font-medium opacity-75"> /đêm</span>
             </p>
             <span className="shine grid size-9 place-items-center rounded-full bg-[image:var(--gradient-primary)] text-primary-foreground shadow-[var(--shadow-glow)] transition-transform duration-500 group-hover:-rotate-45">
-              <ArrowRight className="size-4" />
+              <ArrowRight className="size-4" aria-hidden />
             </span>
           </div>
         </div>
@@ -280,7 +281,7 @@ export function CoverflowSlider({ hotels }: { hotels: Hotel[] }) {
   }, [api]);
 
   return (
-    <div className="relative">
+    <div className="relative" role="region" aria-roledescription="băng chuyền" aria-label="Khách sạn được yêu thích">
       <div ref={ref} className="overflow-hidden py-4">
         <div className="-ml-3 flex touch-pan-y">
           {hotels.map((h) => (
@@ -301,7 +302,7 @@ export function CoverflowSlider({ hotels }: { hotels: Hotel[] }) {
           onClick={() => api?.scrollPrev()}
           className="grid size-10 place-items-center rounded-full border bg-card shadow-[var(--shadow-soft)] transition-all hover:border-primary hover:text-primary active:scale-90"
         >
-          <ChevronLeft className="size-5" />
+          <ChevronLeft className="size-5" aria-hidden />
         </button>
         <div className="flex items-center gap-1.5">
           {hotels.map((h, i) => (
@@ -323,7 +324,7 @@ export function CoverflowSlider({ hotels }: { hotels: Hotel[] }) {
           onClick={() => api?.scrollNext()}
           className="grid size-10 place-items-center rounded-full border bg-card shadow-[var(--shadow-soft)] transition-all hover:border-primary hover:text-primary active:scale-90"
         >
-          <ChevronRight className="size-5" />
+          <ChevronRight className="size-5" aria-hidden />
         </button>
       </div>
     </div>
@@ -363,7 +364,7 @@ export function StoriesRow() {
   const [seen, setSeen] = useState<string[]>([]);
   return (
     <>
-      <div className="no-scrollbar -mx-4 flex gap-4 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
+      <div className="no-scrollbar -mx-4 flex gap-4 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0" role="list">
         {STORIES.map((s, i) => {
           const isSeen = seen.includes(s.city);
           return (
@@ -372,6 +373,7 @@ export function StoriesRow() {
               type="button"
               onClick={() => setOpen(i)}
               className="group flex w-[72px] shrink-0 flex-col items-center gap-1.5"
+              role="listitem"
             >
               <span
                 className={cn(
@@ -381,11 +383,10 @@ export function StoriesRow() {
               >
                 <span className="block size-full overflow-hidden rounded-full border-[3px] border-background">
                   <img
-                    src={s.cover}
+                    {...imgProps(s.cover, "68px")}
                     alt={s.city}
                     loading="lazy"
-                    width={136}
-                    height={136}
+                    decoding="async"
                     className="size-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                 </span>
@@ -480,17 +481,21 @@ function StoryViewer({
         onPointerUp={() => setPaused(false)}
         onPointerCancel={() => setPaused(false)}
       >
-        {story.slides.map((sl, idx) => (
-          <img
-            key={`${sl.img}-${idx}`}
-            src={sl.img}
-            alt={sl.hotel.name}
-            className={cn(
-              "absolute inset-0 size-full object-cover transition-opacity duration-500",
-              idx === i ? "animate-kenburns opacity-100" : "opacity-0",
-            )}
-          />
-        ))}
+        {story.slides.map((sl, idx) =>
+          idx === i || idx === Math.min(story.slides.length - 1, i + 1) ? (
+            <img
+              key={`${sl.img}-${idx}`}
+              {...imgProps(sl.img, "(min-width: 640px) 420px, 100vw")}
+              alt={idx === i ? sl.hotel.name : ""}
+              decoding="async"
+              fetchPriority={idx === i ? "high" : "low"}
+              className={cn(
+                "absolute inset-0 size-full object-cover transition-opacity duration-500",
+                idx === i ? "animate-kenburns opacity-100" : "opacity-0",
+              )}
+            />
+          ) : null,
+        )}
         <div className="absolute inset-0 bg-[image:var(--gradient-image-fade)]" />
         <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-secondary/70 to-transparent" />
 
@@ -519,8 +524,9 @@ function StoryViewer({
           />
           <div className="mt-3 flex items-center gap-2.5">
             <img
-              src={story.cover}
+              {...imgProps(story.cover, "36px")}
               alt=""
+              decoding="async"
               className="size-9 rounded-full border-2 border-on-image object-cover"
             />
             <div className="min-w-0 flex-1 leading-tight">
@@ -535,7 +541,7 @@ function StoryViewer({
               onClick={onClose}
               className="glass-dark grid size-9 place-items-center rounded-full"
             >
-              <X className="size-5" />
+              <X className="size-5" aria-hidden />
             </button>
           </div>
         </div>
@@ -545,7 +551,7 @@ function StoryViewer({
           className="word-reveal glass-dark absolute inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-20 rounded-3xl p-4"
         >
           <p className="flex items-center gap-1 text-xs opacity-85">
-            <MapPin className="size-3.5" /> {slide.hotel.area}
+            <MapPin className="size-3.5" aria-hidden /> {slide.hotel.area}
           </p>
           <h3 className="mt-1 font-display text-2xl font-semibold leading-tight">
             {slide.hotel.name}
@@ -563,7 +569,7 @@ function StoryViewer({
               params={{ id: slide.hotel.id }}
               className="shine inline-flex h-11 items-center gap-1.5 rounded-full bg-[image:var(--gradient-primary)] px-5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)]"
             >
-              Xem phòng <ArrowRight className="size-4" />
+              Xem phòng <ArrowRight className="size-4" aria-hidden />
             </Link>
           </div>
         </div>

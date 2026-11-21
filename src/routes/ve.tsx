@@ -2,27 +2,21 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { SHOW_SCHEDULE, TABLES, formatVnd, priceDays, quote, saveHold, todayIso, type TableId } from "@/lib/services";
 import { symphonyEventJsonLd } from "@/lib/event-schema";
+import { pageTitle, seoHead } from "@/lib/seo";
+import { imgProps } from "@/lib/images";
 import { createPayment } from "@/lib/payment";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { recordServiceBooking } from "@/lib/service-bookings";
 
 export const Route = createFileRoute("/ve")({
-  head: () => ({
-    meta: [
-      { title: "Symphony of the Sea — vé sự kiện Phú Quốc | DFxTrip" },
-      {
-        name: "description",
-        content:
-          "Giữ vé Symphony of the Sea tại Sun Bavaria, Phú Quốc. Người lớn 1.200.000đ hoặc 1.300.000đ. Phụ thu bàn sát biển tính theo bàn.",
-      },
-    ],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify(symphonyEventJsonLd()),
-      },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      title: "Symphony of the Sea — vé Phú Quốc — DFxTrip",
+      description:
+        "Giữ vé Symphony of the Sea tại Sun Bavaria, Phú Quốc. Người lớn 1.200.000đ hoặc 1.300.000đ. Phụ thu bàn sát biển tính theo bàn.",
+      path: "/ve",
+      jsonLd: symphonyEventJsonLd(),
+    }),
   component: TicketPage,
 });
 
@@ -146,10 +140,8 @@ function TicketPage() {
           {SHOW_SCHEDULE.map((item) => (
             <li key={item.time} className="flex gap-3 border-t p-4">
               <img
-                src={item.image}
+                {...imgProps(item.image, "64px")}
                 alt=""
-                width={96}
-                height={96}
                 loading="lazy"
                 decoding="async"
                 className="size-16 shrink-0 rounded-full object-cover"

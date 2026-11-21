@@ -3,6 +3,7 @@ import { ArrowRight, MapPin } from "lucide-react";
 import { HeartButton } from "@/components/site/hotel-card";
 import { SpotlightCard } from "@/components/fx/effects";
 import { formatVnd, type Tour } from "@/lib/tours";
+import { imgProps } from "@/lib/images";
 
 export function TourCard({ tour }: { tour: Tour }) {
   return (
@@ -14,10 +15,8 @@ export function TourCard({ tour }: { tour: Tour }) {
       >
         <div className="relative aspect-[4/3] overflow-hidden">
           <img
-            src={tour.image}
+            {...imgProps(tour.image, "(min-width: 1280px) 360px, (min-width: 768px) 46vw, 92vw")}
             alt={tour.imageAlt}
-            width={1400}
-            height={933}
             decoding="async"
             loading="lazy"
             className="size-full object-cover transition-transform duration-[1.2s] ease-[var(--ease-out-expo)] group-hover:scale-105"
@@ -30,7 +29,7 @@ export function TourCard({ tour }: { tour: Tour }) {
         <div className="flex flex-1 flex-col gap-2 p-4">
           <h3 className="line-clamp-2 font-display text-lg font-semibold">{tour.name}</h3>
           <p className="flex items-center gap-1 text-sm text-muted-foreground">
-            <MapPin className="size-3.5 shrink-0" />
+            <MapPin className="size-3.5 shrink-0" aria-hidden />
             {tour.from} → {tour.destination}
           </p>
           <p className="text-sm text-muted-foreground">
@@ -47,7 +46,7 @@ export function TourCard({ tour }: { tour: Tour }) {
             </div>
             <span className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-[image:var(--gradient-primary)] px-4 text-sm font-semibold text-primary-foreground">
               Xem lịch
-              <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+              <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
             </span>
           </div>
         </div>

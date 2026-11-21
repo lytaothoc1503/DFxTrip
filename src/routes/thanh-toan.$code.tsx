@@ -11,17 +11,16 @@ import {
   vietQrUrl,
   type Payee,
 } from "@/lib/payment";
+import { pageTitle, seoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/thanh-toan/$code")({
-  head: () => ({
-    meta: [
-      { title: "Thanh toán chuyển khoản — DFxTrip" },
-      {
-        name: "description",
-        content: "Chuyển khoản đúng số tiền và nội dung. Báo đã chuyển chưa có nghĩa là vé đã được xác nhận.",
-      },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      title: pageTitle("Thanh toán chuyển khoản"),
+      description: "Chuyển khoản đúng số tiền và nội dung. Báo đã chuyển chưa có nghĩa là vé đã được xác nhận.",
+      path: "/thanh-toan",
+      noindex: true,
+    }),
   component: PayPage,
 });
 

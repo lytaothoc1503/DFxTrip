@@ -8,6 +8,8 @@ import { recordServiceBooking } from "@/lib/service-bookings";
 import { GuestReviewCard } from "@/components/site/guest-review";
 import { reviewsForTour } from "@/lib/content";
 import { formatVnd, getTourBySlug, saveTourHold, tourTotal } from "@/lib/tours";
+import { pageTitle, seoHead, tourJsonLd } from "@/lib/seo";
+import { imgProps } from "@/lib/images";
 
 export const Route = createFileRoute("/tour/$slug")({
   loader: async ({ params }) => {
@@ -17,16 +19,20 @@ export const Route = createFileRoute("/tour/$slug")({
   },
   head: ({ loaderData }) => {
     const tour = loaderData?.tour;
-    const title = tour ? `${tour.name} — DFxTrip` : "Tour — DFxTrip";
-    const description = tour?.short ?? "Chi tiết tour trên DFxTrip.";
-    return {
-      meta: [
-        { title },
-        { name: "description", content: description },
-        { property: "og:title", content: title },
-        { property: "og:description", content: description },
-      ],
-    };
+    if (!tour) {
+      return seoHead({
+        title: pageTitle("Không tìm thấy tour"),
+        description: "Tour này không có trên DFxTrip.",
+        path: "/tour",
+        noindex: true,
+      });
+    }
+    return seoHead({
+      title: pageTitle(tour.name),
+      description: `${tour.short} Giá ${formatVnd(tour.price)} mỗi khách.`,
+      path: `/tour/${tour.slug}`,
+      jsonLd: tourJsonLd(tour),
+    });
   },
   notFoundComponent: () => (
     <div className="mx-auto max-w-md px-4 py-24 text-center">
@@ -100,10 +106,8 @@ function TourDetail() {
       </Link>
       <div className="relative mt-3 overflow-hidden rounded-3xl">
         <img
-          src={tour.image}
+          {...imgProps(tour.image, "(min-width: 768px) 720px, 100vw")}
           alt={tour.imageAlt}
-          width={1400}
-          height={933}
           decoding="async"
           className="aspect-[16/10] w-full object-cover"
         />

@@ -1,6 +1,6 @@
-import { Star } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
+import { Stars } from "@/components/site/hotel-card";
 import { formatVnd } from "@/lib/hotels";
 
 export type FilterState = {
@@ -59,16 +59,7 @@ export function Filters({
                 checked={value.stars.includes(s)}
                 onCheckedChange={() => toggle("stars", s)}
               />
-              <span className="flex gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className={
-                      i < s ? "size-4 fill-star text-star" : "size-4 fill-muted text-muted"
-                    }
-                  />
-                ))}
-              </span>
+              <Stars n={s} decorative iconClassName="size-4" />
               <span className="text-muted-foreground">{s} sao</span>
             </label>
           ))}

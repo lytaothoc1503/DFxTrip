@@ -3,20 +3,21 @@ import { useState } from "react";
 import { TourCard } from "@/components/site/tour-card";
 import { Reveal } from "@/components/fx/effects";
 import { listTours, TOUR_GROUPS, toursInGroup } from "@/lib/tours";
+import { pageTitle, seoHead, tourListJsonLd } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/tour/")({
   loader: () => listTours(),
-  head: () => ({
-    meta: [
-      { title: "Tour — DFxTrip" },
-      {
-        name: "description",
-        content:
-          "Mười lăm lịch trình: phía Bắc, Cát Bà, Vân Nam và Nhật Bản từ cuối tháng 11 đến Tết. Giá niêm yết mỗi khách, giữ chỗ chưa phải xác nhận.",
-      },
-    ],
-  }),
+  head: ({ loaderData }) => {
+    const tours = loaderData ?? [];
+    return seoHead({
+      title: pageTitle("Tour và vé xe"),
+      description:
+        "Mười lăm lịch trình: phía Bắc, Cát Bà, Vân Nam và Nhật Bản từ cuối tháng 11 đến Tết. Giá niêm yết mỗi khách, giữ chỗ chưa phải xác nhận.",
+      path: "/tour",
+      jsonLd: tourListJsonLd(tours),
+    });
+  },
   component: TourIndex,
 });
 
@@ -46,13 +47,13 @@ function TourIndex() {
         ))}
       </div>
       {current ? <p className="mt-3 text-sm text-muted-foreground">{current.text}</p> : null}
-      <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+      <ul className="mt-6 grid list-none gap-5 p-0 sm:grid-cols-2 xl:grid-cols-3">
         {list.map((tour, index) => (
-          <Reveal key={tour.slug} delay={index * 60}>
+          <Reveal key={tour.slug} as="li" delay={index * 60}>
             <TourCard tour={tour} />
           </Reveal>
         ))}
-      </div>
+      </ul>
       <p className="mt-8 text-sm text-muted-foreground">
         Vé show Phú Quốc nằm riêng.{" "}
         <Link to="/ve" className="font-semibold text-primary">

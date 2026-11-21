@@ -5,15 +5,17 @@ import { formatVnd, getHotel } from "@/lib/hotels";
 import { formatVnd as money, loadHolds, removeHold, tableById } from "@/lib/services";
 import { createPayment, paymentByRef } from "@/lib/payment";
 import { listTours, loadTourHolds, removeTourHold } from "@/lib/tours";
+import { pageTitle, seoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/dat-cho")({
   loader: () => listTours(),
-  head: () => ({
-    meta: [
-      { title: "Đặt chỗ — DFxTrip" },
-      { name: "description", content: "Chỗ phòng và vé sự kiện đang giữ trên máy này." },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      title: pageTitle("Đặt chỗ"),
+      description: "Chỗ phòng và vé sự kiện đang giữ trên máy này.",
+      path: "/dat-cho",
+      noindex: true,
+    }),
   component: HoldsPage,
 });
 

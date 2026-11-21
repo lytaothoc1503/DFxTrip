@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { CSSProperties } from "react";
 import { ArrowRight, BadgePercent, Phone, ShieldCheck, Sparkles } from "lucide-react";
-import heroImg from "@/assets/hero-dalat.webp";
 import { HOTELS, DESTINATIONS } from "@/lib/hotels";
 import { listTours } from "@/lib/tours";
 import { TourCard } from "@/components/site/tour-card";
@@ -12,26 +11,21 @@ import { SearchBox } from "@/components/site/search-box";
 import { Marquee, NumberTicker, Reveal, TextReveal } from "@/components/fx/effects";
 import { CoverflowSlider, HeroSlider, StoriesRow, type HeroSlide } from "@/components/fx/sliders";
 import { CinematicShowcase } from "@/components/fx/cinematic";
+import { imgProps } from "@/lib/images";
+import { pageTitle, seoHead, siteJsonLd } from "@/lib/seo";
+
+const HERO = "/photos/hero-dalat.webp";
 
 export const Route = createFileRoute("/")({
   loader: () => listTours(),
-  head: () => ({
-    meta: [
-      { title: "DFxTrip — Khám phá khách sạn tuyệt vời" },
-      {
-        name: "description",
-        content: "Sáu chỗ nghỉ tại Đà Lạt, Nha Trang, Sapa và Hà Nội. Giá phòng và vé Phú Quốc hiện trước khi giữ chỗ.",
-      },
-      { property: "og:title", content: "DFxTrip — Khám phá khách sạn tuyệt vời" },
-      {
-        property: "og:description",
-        content: "Sáu chỗ nghỉ tại Đà Lạt, Nha Trang, Sapa và Hà Nội. Giá phòng và vé Phú Quốc hiện trước khi giữ chỗ.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [{ rel: "preload", as: "image", href: heroImg, fetchPriority: "high" }],
-  }),
+  head: () =>
+    seoHead({
+      title: pageTitle("Khám phá khách sạn tuyệt vời"),
+      description:
+        "Sáu chỗ nghỉ tại Đà Lạt, Nha Trang, Sapa và Hà Nội. Giá phòng và vé Phú Quốc hiện trước khi giữ chỗ.",
+      path: "/",
+      jsonLd: siteJsonLd(),
+    }),
   component: Index,
 });
 
@@ -43,7 +37,7 @@ const TILES = [
 ];
 
 const HERO_SLIDES: HeroSlide[] = [
-  { img: heroImg, city: "Đà Lạt", caption: "Hồ Tuyền Lâm · Đà Lạt" },
+  { img: HERO, city: "Đà Lạt", caption: "Hồ Tuyền Lâm · Đà Lạt" },
   { img: HOTELS[2]!.image, city: "Nha Trang", caption: "Bãi Dài Cam Ranh · Nha Trang" },
   { img: HOTELS[3]!.image, city: "Sapa", caption: "Thung lũng Mường Hoa · Sapa" },
   { img: HOTELS[5]!.image, city: "Hà Nội", caption: "Phố cổ · Hà Nội" },
@@ -108,10 +102,8 @@ function Index() {
             className="group relative block overflow-hidden rounded-3xl bg-secondary text-secondary-foreground"
           >
             <img
-              src="/photos/fireworks.webp"
+              {...imgProps("/photos/fireworks.webp", "(min-width: 1280px) 1152px, 100vw")}
               alt="Pháo hoa Symphony of the Sea trên biển Phú Quốc"
-              width={1024}
-              height={1024}
               loading="lazy"
               decoding="async"
               className="h-56 w-full object-cover opacity-80 transition-transform duration-700 group-hover:scale-105 sm:h-72"
@@ -282,11 +274,17 @@ function Index() {
                 className="group relative block h-full min-h-40 overflow-hidden rounded-2xl"
               >
                 <img
-                  src={t.img}
+                  {...imgProps(
+                    t.img,
+                    i === 0
+                      ? "(min-width: 768px) 50vw, 100vw"
+                      : i === 3
+                        ? "(min-width: 768px) 50vw, 50vw"
+                        : "(min-width: 768px) 25vw, 50vw",
+                  )}
                   alt={t.city}
                   loading="lazy"
-                  width={1024}
-                  height={768}
+                  decoding="async"
                   className="absolute inset-0 size-full object-cover transition-transform duration-[1.4s] ease-[var(--ease-out-expo)] group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-[image:var(--gradient-image-fade)]" />

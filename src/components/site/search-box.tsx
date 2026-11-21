@@ -11,12 +11,15 @@ function Field({
   label,
   children,
   className,
+  labelled = true,
 }: {
   icon: typeof MapPin;
   label: string;
   children: React.ReactNode;
   className?: string;
+  labelled?: boolean;
 }) {
+  const Label = labelled ? "label" : "div";
   return (
     <div
       className={cn(
@@ -24,11 +27,11 @@ function Field({
         className,
       )}
     >
-      <Icon className="size-5 shrink-0 text-primary" />
-      <div className="min-w-0 flex-1">
-        <p className="text-xs font-semibold text-foreground">{label}</p>
+      <Icon className="size-5 shrink-0 text-primary" aria-hidden />
+      <Label className="min-w-0 flex-1">
+        <span className="block text-xs font-semibold text-foreground">{label}</span>
         {children}
-      </div>
+      </Label>
     </div>
   );
 }
@@ -65,7 +68,7 @@ export function SearchBox({ defaultDest = "" }: { defaultDest?: string }) {
                 onFocus={() => setOpen(true)}
                 placeholder="Ví dụ: Sapa, Đà Lạt, Hội An..."
                 className={inputCls}
-                aria-label="Điểm đến"
+                autoComplete="off"
                 suppressHydrationWarning
               />
             </Field>
@@ -103,7 +106,6 @@ export function SearchBox({ defaultDest = "" }: { defaultDest?: string }) {
             value={checkIn}
             onChange={(e) => setCheckIn(e.target.value)}
             className={inputCls}
-            aria-label="Nhận phòng"
             suppressHydrationWarning
           />
         </Field>
@@ -113,7 +115,6 @@ export function SearchBox({ defaultDest = "" }: { defaultDest?: string }) {
             value={checkOut}
             onChange={(e) => setCheckOut(e.target.value)}
             className={inputCls}
-            aria-label="Trả phòng"
             suppressHydrationWarning
           />
         </Field>
@@ -123,7 +124,7 @@ export function SearchBox({ defaultDest = "" }: { defaultDest?: string }) {
       <Popover>
         <PopoverTrigger asChild>
           <button type="button" className="w-full text-left lg:flex-1">
-            <Field icon={Users} label="Khách & Phòng">
+            <Field icon={Users} label="Khách & Phòng" labelled={false}>
               <p className="truncate text-sm text-muted-foreground">
                 {adults} người lớn · {roomsN} phòng
               </p>
@@ -144,7 +145,7 @@ export function SearchBox({ defaultDest = "" }: { defaultDest?: string }) {
                   onClick={() => r.set(Math.max(r.min, r.v - 1))}
                   className="grid size-8 place-items-center rounded-full border transition-colors hover:border-primary hover:text-primary"
                 >
-                  <Minus className="size-4" />
+                  <Minus className="size-4" aria-hidden />
                 </button>
                 <span className="w-4 text-center font-semibold tabular-nums">{r.v}</span>
                 <button
@@ -153,7 +154,7 @@ export function SearchBox({ defaultDest = "" }: { defaultDest?: string }) {
                   onClick={() => r.set(r.v + 1)}
                   className="grid size-8 place-items-center rounded-full border transition-colors hover:border-primary hover:text-primary"
                 >
-                  <Plus className="size-4" />
+                  <Plus className="size-4" aria-hidden />
                 </button>
               </div>
             </div>
@@ -162,7 +163,7 @@ export function SearchBox({ defaultDest = "" }: { defaultDest?: string }) {
       </Popover>
 
       <Button type="submit" variant="hero" size="lg" className="mt-2 w-full lg:mt-0 lg:w-auto">
-        <Search className="!size-5" /> Tìm khách sạn
+        <Search className="!size-5" aria-hidden /> Tìm khách sạn
       </Button>
     </form>
   );

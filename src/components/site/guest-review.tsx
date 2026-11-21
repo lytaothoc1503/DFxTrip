@@ -17,7 +17,9 @@ export function GuestReviewCard({ review }: { review: GuestReview }) {
       />
       <div className="px-4 py-4">
         <h3 className="font-display text-lg font-semibold">{review.name}</h3>
-        <p className="mt-2 text-sm leading-relaxed text-foreground/80">“{review.text}”</p>
+        <blockquote className="mt-2 text-sm leading-relaxed text-foreground/80">
+          <p>“{review.text}”</p>
+        </blockquote>
       </div>
     </article>
   );
