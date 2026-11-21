@@ -198,6 +198,25 @@ export const DESTINATIONS = [
   "Quy Nhơn",
 ];
 
+/** Bỏ dấu để so khớp "da lat" với "Đà Lạt". */
+export function foldVi(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .replace(/đ/gi, "d")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function hotelMatchesQuery(hotel: Hotel, query: string) {
+  const q = foldVi(query);
+  if (!q) return true;
+  const hay = foldVi(`${hotel.city} ${hotel.area} ${hotel.name} ${hotel.tags.join(" ")}`);
+  const tight = q.replace(/\s/g, "");
+  return hay.includes(q) || hay.replace(/\s/g, "").includes(tight);
+}
+
 export function getHotel(id: string) {
   return HOTELS.find((h) => h.id === id);
 }

@@ -1,27 +1,71 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, LayoutGrid, List, SlidersHorizontal, X } from "lucide-react";
 import { useMemo, useState } from "react";
-import { HOTELS, DESTINATIONS } from "@/lib/hotels";
+import { HOTELS, DESTINATIONS, hotelMatchesQuery, foldVi } from "@/lib/hotels";
 import { HotelCard, HotelRow } from "@/components/site/hotel-card";
 import { DEFAULT_FILTERS, Filters, type FilterState } from "@/components/site/filters";
 import { NumberTicker, Reveal } from "@/components/fx/effects";
+import { SearchBox, DEFAULT_STAY } from "@/components/site/search-box";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { hotelListJsonLd, pageTitle, seoHead } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
-type Search = { dest?: string };
+type Search = {
+  dest?: string;
+  in?: string;
+  out?: string;
+  adults?: number;
+  rooms?: number;
+};
+
+function readIso(value: unknown, fallback: string) {
+  return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : fallback;
+}
+
+function readCount(value: unknown, fallback: number, max: number) {
+  const n = typeof value === "number" ? value : typeof value === "string" ? Number(value) : NaN;
+  if (!Number.isFinite(n)) return fallback;
+  return Math.min(max, Math.max(1, Math.round(n)));
+}
+
+function stayLine(checkIn: string, checkOut: string, adults: number, rooms: number) {
+  const part = (iso: string) => {
+    const [y, m, d] = iso.split("-").map(Number);
+    const date = new Date(y!, (m ?? 1) - 1, d);
+    return `${date.getDate()} Th${date.getMonth() + 1}`;
+  };
+  const [ay, am, ad] = checkIn.split("-").map(Number);
+  const [by, bm, bd] = checkOut.split("-").map(Number);
+  const nights = Math.max(
+    1,
+    Math.round(
+      (new Date(by!, (bm ?? 1) - 1, bd).getTime() - new Date(ay!, (am ?? 1) - 1, ad).getTime()) /
+        86_400_000,
+    ),
+  );
+  return `${part(checkIn)} – ${part(checkOut)} · ${nights} đêm · ${adults} khách · ${rooms} phòng`;
+}
 
 export const Route = createFileRoute("/khach-san/")({
   validateSearch: (s: Record<string, unknown>): Search => {
-    const d = s["dest"];
-    return typeof d === "string" && d ? { dest: d } : {};
+    const raw = typeof s["dest"] === "string" ? s["dest"].trim() : "";
+    const checkIn = readIso(s["in"], DEFAULT_STAY.checkIn);
+    let checkOut = readIso(s["out"], DEFAULT_STAY.checkOut);
+    if (checkOut <= checkIn) checkOut = DEFAULT_STAY.checkOut;
+    return {
+      ...(raw ? { dest: raw } : {}),
+      in: checkIn,
+      out: checkOut,
+      adults: readCount(s["adults"], DEFAULT_STAY.adults, 8),
+      rooms: readCount(s["rooms"], DEFAULT_STAY.rooms, 6),
+    };
   },
   head: ({ match }) => {
     const dest = typeof match.search.dest === "string" ? match.search.dest : "";
     const known = (DESTINATIONS as readonly string[]).includes(dest);
-    const listed = known
-      ? HOTELS.filter((hotel) => `${hotel.city} ${hotel.area}`.toLowerCase().includes(dest.toLowerCase()))
+    const listed = dest
+      ? HOTELS.filter((hotel) => hotelMatchesQuery(hotel, dest) && (known ? hotel.city === dest : true))
       : HOTELS;
     const title = known ? pageTitle(`Khách sạn ${dest}`) : pageTitle("Tìm khách sạn");
     const description = known
@@ -45,14 +89,21 @@ const SORTS = [
 ] as const;
 
 function SearchPage() {
-  const { dest } = Route.useSearch();
+  const { dest, in: checkIn = DEFAULT_STAY.checkIn, out: checkOut = DEFAULT_STAY.checkOut, adults = DEFAULT_STAY.adults, rooms = DEFAULT_STAY.rooms } =
+    Route.useSearch();
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
   const [sort, setSort] = useState<(typeof SORTS)[number]["id"]>("rec");
   const [view, setView] = useState<"grid" | "list">("grid");
 
+  const openedCities = useMemo(
+    () => DESTINATIONS.filter((city) => HOTELS.some((hotel) => hotel.city === city)),
+    [],
+  );
+  const destKnown = Boolean(dest && openedCities.some((city) => foldVi(city) === foldVi(dest)));
+
   const results = useMemo(() => {
     let r = HOTELS.filter((h) => {
-      if (dest && !`${h.city} ${h.area}`.toLowerCase().includes(dest.toLowerCase())) return false;
+      if (dest && !hotelMatchesQuery(h, dest)) return false;
       if (h.price > filters.maxPrice) return false;
       if (filters.stars.length && !filters.stars.includes(h.stars)) return false;
       if (filters.amenities.some((a) => !h.amenities.includes(a))) return false;
@@ -88,9 +139,21 @@ function SearchPage() {
             <span className="font-semibold text-foreground">
               <NumberTicker key={results.length} value={results.length} duration={700} />
             </span>{" "}
-            chỗ nghỉ · 20 – 22 Th11 · 2 khách
+            chỗ nghỉ · {stayLine(checkIn, checkOut, adults, rooms)}
           </p>
         </div>
+      </div>
+
+      <div className="mt-4">
+        <SearchBox
+          key={`${dest ?? ""}-${checkIn}-${checkOut}-${adults}-${rooms}`}
+          tone="card"
+          defaultDest={dest ?? ""}
+          defaultCheckIn={checkIn}
+          defaultCheckOut={checkOut}
+          defaultAdults={adults}
+          defaultRooms={rooms}
+        />
       </div>
 
       {/* Toolbar */}
@@ -132,6 +195,7 @@ function SearchPage() {
         {dest && (
           <Link
             to="/khach-san"
+            search={{ in: checkIn, out: checkOut, adults, rooms }}
             className="flex shrink-0 items-center gap-1 rounded-full bg-accent px-3 py-2 text-sm font-medium text-accent-foreground"
           >
             {dest} <X className="size-3.5" />
@@ -176,18 +240,32 @@ function SearchPage() {
         <div key={gridKey}>
           {results.length === 0 ? (
             <Reveal className="rounded-3xl border border-dashed bg-card p-10 text-center">
-              <p className="font-display text-xl font-semibold">Không tìm thấy chỗ nghỉ phù hợp</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Thử nới lỏng bộ lọc hoặc đổi điểm đến.
+              <p className="font-display text-xl font-semibold">
+                {dest && !destKnown ? `Chưa có chỗ nghỉ tại ${dest}` : "Không có chỗ nghỉ khớp bộ lọc"}
               </p>
-              <Button
-                variant="hero"
-                className="mt-5"
-                onClick={() => setFilters(DEFAULT_FILTERS)}
-                asChild
-              >
-                <Link to="/khach-san">Xem tất cả</Link>
-              </Button>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {dest && !destKnown
+                  ? "Đang mở bán tại các điểm dưới đây."
+                  : "Nới giá, sao hoặc tiện ích để xem thêm."}
+              </p>
+              {dest && !destKnown ? (
+                <div className="mt-5 flex flex-wrap justify-center gap-2">
+                  {openedCities.map((city) => (
+                    <Link
+                      key={city}
+                      to="/khach-san"
+                      search={{ dest: city, in: checkIn, out: checkOut, adults, rooms }}
+                      className="rounded-full border bg-card px-4 py-2 text-sm font-semibold text-primary"
+                    >
+                      {city}
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <Button variant="hero" className="mt-5" onClick={() => setFilters(DEFAULT_FILTERS)}>
+                  Xoá bộ lọc
+                </Button>
+              )}
             </Reveal>
           ) : (
             <>
