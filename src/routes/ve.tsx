@@ -1,6 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { SHOW_SCHEDULE, TABLES, formatVnd, quote, saveHold, type TableId } from "@/lib/services";
+import { SHOW_SCHEDULE, TABLES, formatVnd, priceDays, quote, saveHold, todayIso, type TableId } from "@/lib/services";
+import { symphonyEventJsonLd } from "@/lib/event-schema";
+import { createPayment } from "@/lib/payment";
+import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { recordServiceBooking } from "@/lib/service-bookings";
 
 export const Route = createFileRoute("/ve")({
   head: () => ({
@@ -10,6 +14,12 @@ export const Route = createFileRoute("/ve")({
         name: "description",
         content:
           "Giữ vé Symphony of the Sea tại Sun Bavaria, Phú Quốc. Người lớn 1.200.000đ hoặc 1.300.000đ. Phụ thu bàn sát biển tính theo bàn.",
+      },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(symphonyEventJsonLd()),
       },
     ],
   }),
@@ -53,7 +63,8 @@ function Stepper({
 
 function TicketPage() {
   const navigate = useNavigate();
-  const [date, setDate] = useState("2026-11-20");
+  const { user } = useCurrentUserState();
+  const [date, setDate] = useState(todayIso);
   const [adults, setAdults] = useState(2);
   const [kids, setKids] = useState(0);
   const [infants, setInfants] = useState(0);
@@ -63,7 +74,7 @@ function TicketPage() {
   const [error, setError] = useState("");
   const price = quote({ date, adults, kids, infants, tableId });
 
-  function hold() {
+  async function hold() {
     if (name.trim().length < 2 || phone.trim().length < 8) {
       setError("Cần tên và số điện thoại để giữ chỗ trên máy này.");
       return;
@@ -76,7 +87,7 @@ function TicketPage() {
       setError("Số người đông hơn chỗ ngồi của bàn đã chọn. Chọn bàn lớn hơn.");
       return;
     }
-    saveHold({
+    const hold = saveHold({
       id: `SB-${Date.now().toString().slice(-6)}`,
       date,
       adults,
@@ -89,8 +100,33 @@ function TicketPage() {
       tableFee: price.fee,
       total: price.total,
       createdAt: new Date().toISOString(),
+    })[0];
+    if (!hold) return;
+    if (user && !user.isDevFallback) {
+      try {
+        await recordServiceBooking({
+          data: {
+            serviceType: "show",
+            productId: "symphony-of-the-sea",
+            adults,
+            children: kids,
+            tableId,
+            showDate: date,
+            guestName: name.trim(),
+            guestPhone: phone.trim(),
+          },
+        });
+      } catch {
+        // Giữ chỗ trên máy vẫn tiếp tục khi SQL chưa ghi được.
+      }
+    }
+    const payment = createPayment({
+      kind: "ticket",
+      ref: hold.id,
+      title: "Symphony of the Sea",
+      amount: hold.total,
     });
-    navigate({ to: "/dat-cho" });
+    navigate({ to: "/thanh-toan/$code", params: { code: payment.code } });
   }
 
   return (
@@ -109,7 +145,15 @@ function TicketPage() {
         <ul>
           {SHOW_SCHEDULE.map((item) => (
             <li key={item.time} className="flex gap-3 border-t p-4">
-              <img src={item.image} alt="" className="size-16 shrink-0 rounded-full object-cover" />
+              <img
+                src={item.image}
+                alt=""
+                width={96}
+                height={96}
+                loading="lazy"
+                decoding="async"
+                className="size-16 shrink-0 rounded-full object-cover"
+              />
               <div>
                 <p className="font-semibold text-primary">{item.time}</p>
                 <p className="font-medium">{item.title}</p>
@@ -148,11 +192,35 @@ function TicketPage() {
       <section className="mt-6 space-y-4 rounded-3xl border bg-card p-4">
         <label className="block">
           <span className="font-medium">Ngày đến</span>
+          <span className="mt-1 block text-sm text-muted-foreground">
+            Bấm một ngày để so giá người lớn. Thứ Sáu và thứ Bảy là 1.300.000đ, các ngày khác 1.200.000đ.
+          </span>
+          <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
+            {priceDays(todayIso()).map((day) => {
+              const selected = day.iso === date;
+              return (
+                <button
+                  key={day.iso}
+                  type="button"
+                  aria-pressed={selected}
+                  aria-label={`${day.weekday} ${day.day}, người lớn ${formatVnd(day.adult)}`}
+                  onClick={() => setDate(day.iso)}
+                  className={`w-20 shrink-0 rounded-2xl border px-2 py-2 text-center ${selected ? "border-primary bg-accent" : "bg-background"}`}
+                >
+                  <span className="block text-xs text-muted-foreground">{day.weekday}</span>
+                  <span className="block text-lg font-semibold">{day.day}</span>
+                  <span className="block text-[11px] font-semibold text-primary">
+                    {day.weekend ? "1,3 tr" : "1,2 tr"}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
           <input
             type="date"
             value={date}
             onChange={(event) => setDate(event.target.value)}
-            className="mt-1 h-12 w-full rounded-2xl border bg-background px-3"
+            className="mt-2 h-12 w-full rounded-2xl border bg-background px-3"
           />
           <span className="mt-1 block text-sm text-muted-foreground">
             {price.weekend ? "Thứ Sáu hoặc thứ Bảy" : "Chủ nhật đến thứ Năm"} · người lớn {formatVnd(price.adult)} · trẻ
@@ -198,7 +266,7 @@ function TicketPage() {
           onClick={hold}
           className="flex h-14 w-full items-center justify-center rounded-full bg-[image:var(--gradient-primary)] text-base font-semibold text-primary-foreground"
         >
-          Giữ vé trên máy này
+          Giữ vé và hiện mã chuyển khoản
         </button>
       </section>
     </div>

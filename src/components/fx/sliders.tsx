@@ -90,8 +90,10 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
             key={sl.img}
             src={sl.img}
             alt={sl.caption}
-            width={1920}
-            height={1088}
+            width={1600}
+            height={907}
+            decoding="async"
+            fetchPriority={idx === 0 ? "high" : "low"}
             loading={idx === 0 ? "eager" : "lazy"}
             className={cn(
               "absolute inset-0 size-full object-cover transition-[opacity,transform,filter] duration-[1400ms] ease-[var(--ease-out-expo)]",

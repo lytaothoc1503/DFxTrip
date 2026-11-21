@@ -63,7 +63,7 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "Kinh nghiệm",
     date: "02/11/2026",
     readMin: 7,
-    image: "/tours/tour-ha-giang.jpg",
+    image: "/tours/tour-ha-giang.webp",
     author: "VinaStay Team",
     body: [
       "Tháng 10 đến tháng 11 là mùa đẹp nhất của Hà Giang, khi hoa tam giác mạch nở hồng khắp các sườn đồi Đồng Văn, Mèo Vạc.",
@@ -78,7 +78,7 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "Cẩm nang",
     date: "28/10/2026",
     readMin: 5,
-    image: "/tours/tour-ha-long.jpg",
+    image: "/tours/tour-ha-long.webp",
     author: "Ngọc Hân",
     body: [
       "Vịnh Hạ Long nổi tiếng với hang Sửng Sốt, đảo Ti Tốp, thuận tiện từ Hà Nội. Vịnh Lan Hạ yên tĩnh hơn, nước xanh hơn, ít tàu hơn.",
@@ -93,7 +93,7 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "Lịch trình",
     date: "20/10/2026",
     readMin: 4,
-    image: "/tours/tour-ninh-binh.jpg",
+    image: "/tours/tour-ninh-binh.webp",
     author: "Minh Quân",
     body: [
       "Xuất phát sớm từ Hà Nội, khoảng 2 tiếng là tới Tràng An. Đi thuyền qua các hang động mất khoảng 2–3 tiếng.",
@@ -108,7 +108,7 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "Mẹo hay",
     date: "15/10/2026",
     readMin: 3,
-    image: "/photos/hotel-1.jpg",
+    image: "/photos/hotel-1.webp",
     author: "VinaStay Team",
     body: [
       "Đặt trước 3–4 tuần thường có giá tốt hơn đặt sát ngày, đặc biệt dịp lễ.",
@@ -123,7 +123,7 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "Cảm hứng",
     date: "08/10/2026",
     readMin: 5,
-    image: "/photos/hotel-4.jpg",
+    image: "/photos/hotel-4.webp",
     author: "Thu Trang",
     body: [
       "Mùa săn mây Sapa kéo dài từ tháng 10 đến tháng 3 năm sau, đẹp nhất sau những ngày mưa.",
@@ -138,7 +138,7 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "Quốc tế",
     date: "01/10/2026",
     readMin: 8,
-    image: "/tours/tour-han-quoc.jpg",
+    image: "/tours/tour-han-quoc.webp",
     author: "Ngọc Hân",
     body: [
       "Lá đỏ Hàn Quốc đẹp nhất từ giữa tháng 10 đến đầu tháng 11, trong đó đảo Nami và núi Seorak là điểm nổi bật.",

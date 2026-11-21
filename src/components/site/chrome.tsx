@@ -2,6 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Bell, CalendarCheck, Globe, Heart, Home, Search, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { BRAND } from "@/lib/brand";
 import { Button } from "@/components/ui/button";
 
 export function Logo({ light = false }: { light?: boolean }) {
@@ -35,6 +36,7 @@ export function Logo({ light = false }: { light?: boolean }) {
 const NAV = [
   { to: "/", label: "Trang chủ" },
   { to: "/khach-san", label: "Khách sạn" },
+  { to: "/tour", label: "Tour" },
   { to: "/dat-cho", label: "Đặt chỗ" },
   { to: "/yeu-thich", label: "Yêu thích" },
 ] as const;
@@ -85,6 +87,9 @@ export function SiteHeader() {
           })}
         </nav>
         <div className="flex items-center gap-2">
+          <Link to="/tour" className="rounded-full px-3 py-2 text-sm font-semibold text-primary md:hidden">
+            Tour
+          </Link>
           <button className="hidden items-center gap-1 rounded-full px-3 py-2 text-sm font-medium text-foreground/80 hover:bg-muted sm:flex">
             <Globe className="size-4" /> VN
           </button>
@@ -170,7 +175,7 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 sm:px-6 md:flex-row md:items-center md:justify-between">
         <Logo />
         <p className="text-sm text-muted-foreground">
-          Đặt phòng an toàn với DFxTrip. Hỗ trợ 24/7 · Bản mockup giao diện
+          DFxTrip giữ chỗ trên máy này, chưa phải xác nhận. Gọi {BRAND.phoneDisplay}.
         </p>
       </div>
     </footer>

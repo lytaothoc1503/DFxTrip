@@ -11,11 +11,16 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DatChoRouteImport } from './routes/dat-cho'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as TaiKhoanRouteImport } from './routes/tai-khoan'
 import { Route as VeRouteImport } from './routes/ve'
 import { Route as YeuThichRouteImport } from './routes/yeu-thich'
 import { Route as KhachSanIndexRouteImport } from './routes/khach-san.index'
 import { Route as KhachSanIdRouteImport } from './routes/khach-san.$id'
+import { Route as ThanhToanCodeRouteImport } from './routes/thanh-toan.$code'
+import { Route as TourIndexRouteImport } from './routes/tour.index'
+import { Route as TourSlugRouteImport } from './routes/tour.$slug'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -25,6 +30,11 @@ const IndexRoute = IndexRouteImport.update({
 const DatChoRoute = DatChoRouteImport.update({
   id: '/dat-cho',
   path: '/dat-cho',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TaiKhoanRoute = TaiKhoanRouteImport.update({
@@ -52,73 +62,128 @@ const KhachSanIdRoute = KhachSanIdRouteImport.update({
   path: '/khach-san/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ThanhToanCodeRoute = ThanhToanCodeRouteImport.update({
+  id: '/thanh-toan/$code',
+  path: '/thanh-toan/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TourIndexRoute = TourIndexRouteImport.update({
+  id: '/tour/',
+  path: '/tour/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TourSlugRoute = TourSlugRouteImport.update({
+  id: '/tour/$slug',
+  path: '/tour/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dat-cho': typeof DatChoRoute
+  '/login': typeof LoginRoute
   '/tai-khoan': typeof TaiKhoanRoute
   '/ve': typeof VeRoute
   '/yeu-thich': typeof YeuThichRoute
   '/khach-san/$id': typeof KhachSanIdRoute
+  '/thanh-toan/$code': typeof ThanhToanCodeRoute
+  '/tour/$slug': typeof TourSlugRoute
   '/khach-san/': typeof KhachSanIndexRoute
+  '/tour/': typeof TourIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dat-cho': typeof DatChoRoute
+  '/login': typeof LoginRoute
   '/tai-khoan': typeof TaiKhoanRoute
   '/ve': typeof VeRoute
   '/yeu-thich': typeof YeuThichRoute
   '/khach-san/$id': typeof KhachSanIdRoute
+  '/thanh-toan/$code': typeof ThanhToanCodeRoute
+  '/tour/$slug': typeof TourSlugRoute
   '/khach-san': typeof KhachSanIndexRoute
+  '/tour': typeof TourIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dat-cho': typeof DatChoRoute
+  '/login': typeof LoginRoute
   '/tai-khoan': typeof TaiKhoanRoute
   '/ve': typeof VeRoute
   '/yeu-thich': typeof YeuThichRoute
   '/khach-san/$id': typeof KhachSanIdRoute
+  '/thanh-toan/$code': typeof ThanhToanCodeRoute
+  '/tour/$slug': typeof TourSlugRoute
   '/khach-san/': typeof KhachSanIndexRoute
+  '/tour/': typeof TourIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/dat-cho'
+    | '/login'
     | '/tai-khoan'
     | '/ve'
     | '/yeu-thich'
     | '/khach-san/$id'
+    | '/thanh-toan/$code'
+    | '/tour/$slug'
     | '/khach-san/'
+    | '/tour/'
+    | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/dat-cho'
+    | '/login'
     | '/tai-khoan'
     | '/ve'
     | '/yeu-thich'
     | '/khach-san/$id'
+    | '/thanh-toan/$code'
+    | '/tour/$slug'
     | '/khach-san'
+    | '/tour'
+    | '/api/auth/$'
   id:
     | '__root__'
     | '/'
     | '/dat-cho'
+    | '/login'
     | '/tai-khoan'
     | '/ve'
     | '/yeu-thich'
     | '/khach-san/$id'
+    | '/thanh-toan/$code'
+    | '/tour/$slug'
     | '/khach-san/'
+    | '/tour/'
+    | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DatChoRoute: typeof DatChoRoute
+  LoginRoute: typeof LoginRoute
   TaiKhoanRoute: typeof TaiKhoanRoute
   VeRoute: typeof VeRoute
   YeuThichRoute: typeof YeuThichRoute
   KhachSanIdRoute: typeof KhachSanIdRoute
+  ThanhToanCodeRoute: typeof ThanhToanCodeRoute
+  TourSlugRoute: typeof TourSlugRoute
   KhachSanIndexRoute: typeof KhachSanIndexRoute
+  TourIndexRoute: typeof TourIndexRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -135,6 +200,13 @@ declare module '@tanstack/react-router' {
       path: '/dat-cho'
       fullPath: '/dat-cho'
       preLoaderRoute: typeof DatChoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tai-khoan': {
@@ -172,17 +244,50 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KhachSanIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/thanh-toan/$code': {
+      id: '/thanh-toan/$code'
+      path: '/thanh-toan/$code'
+      fullPath: '/thanh-toan/$code'
+      preLoaderRoute: typeof ThanhToanCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tour/': {
+      id: '/tour/'
+      path: '/tour'
+      fullPath: '/tour/'
+      preLoaderRoute: typeof TourIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tour/$slug': {
+      id: '/tour/$slug'
+      path: '/tour/$slug'
+      fullPath: '/tour/$slug'
+      preLoaderRoute: typeof TourSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DatChoRoute: DatChoRoute,
+  LoginRoute: LoginRoute,
   TaiKhoanRoute: TaiKhoanRoute,
   VeRoute: VeRoute,
   YeuThichRoute: YeuThichRoute,
   KhachSanIdRoute: KhachSanIdRoute,
+  ThanhToanCodeRoute: ThanhToanCodeRoute,
+  TourSlugRoute: TourSlugRoute,
   KhachSanIndexRoute: KhachSanIndexRoute,
+  TourIndexRoute: TourIndexRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

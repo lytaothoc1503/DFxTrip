@@ -68,6 +68,7 @@ export function HotelCard({ hotel, eager }: { hotel: Hotel; eager?: boolean }) {
             alt={hotel.name}
             width={1024}
             height={768}
+            decoding="async"
             loading={eager ? "eager" : "lazy"}
             style={imgTransition(hotel.id)}
             className="size-full object-cover transition-transform duration-[1.2s] ease-[var(--ease-out-expo)] group-hover:scale-110"

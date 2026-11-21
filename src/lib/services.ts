@@ -34,31 +34,31 @@ export const SHOW_SCHEDULE = [
     time: "16:00",
     title: "Lên Cầu Hôn (vé tặng)",
     detail: "Tham quan Cầu Hôn",
-    image: "/photos/bridge.jpg",
+    image: "/photos/bridge.webp",
   },
   {
     time: "16:30",
     title: "Nhà hàng mở cửa đón khách",
     detail: "Sun Bavaria chào đón",
-    image: "/photos/terrace.jpg",
+    image: "/photos/terrace.webp",
   },
   {
     time: "17:30",
     title: "Phục vụ ăn buffet",
     detail: "Tiệc buffet tại nhà hàng",
-    image: "/photos/buffet.jpg",
+    image: "/photos/buffet.webp",
   },
   {
     time: "19:40",
     title: "Show pháo bông Symphony of the Sea",
     detail: "Chương trình chính",
-    image: "/photos/fireworks.jpg",
+    image: "/photos/fireworks.webp",
   },
   {
     time: "20:10",
     title: "Kết thúc",
     detail: "Chúc anh chị xem show vui vẻ",
-    image: "/photos/fireworks.jpg",
+    image: "/photos/fireworks.webp",
   },
 ] as const;
 
@@ -73,6 +73,43 @@ export function adultPrice(date: string) {
 
 export function kidPrice(date: string) {
   return Math.round(adultPrice(date) * 0.7);
+}
+
+const WEEKDAY = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"] as const;
+
+/** Cộng ngày trên lịch, không phụ thuộc múi giờ của máy. */
+export function addIsoDays(iso: string, days: number) {
+  const [year, month, day] = iso.split("-").map(Number);
+  const next = new Date(Date.UTC(year ?? 2026, (month ?? 1) - 1, (day ?? 1) + days));
+  const y = next.getUTCFullYear();
+  const m = String(next.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(next.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+export function todayIso(now = new Date()) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(now);
+}
+
+/** 14 ngày tới, mỗi ô một giá người lớn để so thứ Sáu–thứ Bảy với ngày thường. */
+export function priceDays(startIso: string, count = 14) {
+  return Array.from({ length: count }, (_, index) => {
+    const iso = addIsoDays(startIso, index);
+    const [year, month, day] = iso.split("-").map(Number);
+    const weekday = new Date(Date.UTC(year ?? 2026, (month ?? 1) - 1, day ?? 1)).getUTCDay();
+    return {
+      iso,
+      weekday: WEEKDAY[weekday] ?? "",
+      day: day ?? 1,
+      adult: adultPrice(iso),
+      weekend: isWeekend(iso),
+    };
+  });
 }
 
 export function ticketTotal(date: string, adults: number, kids: number) {

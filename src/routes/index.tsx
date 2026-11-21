@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { CSSProperties } from "react";
-import { ArrowRight, BadgePercent, Headphones, ShieldCheck, Sparkles } from "lucide-react";
-import heroImg from "@/assets/hero-dalat.jpg";
+import { ArrowRight, BadgePercent, Phone, ShieldCheck, Sparkles } from "lucide-react";
+import heroImg from "@/assets/hero-dalat.webp";
 import { HOTELS, DESTINATIONS } from "@/lib/hotels";
+import { listTours } from "@/lib/tours";
+import { TourCard } from "@/components/site/tour-card";
 import { HotelRow } from "@/components/site/hotel-card";
 import { SearchBox } from "@/components/site/search-box";
 import { Marquee, NumberTicker, Reveal, TextReveal } from "@/components/fx/effects";
@@ -10,17 +12,18 @@ import { CoverflowSlider, HeroSlider, StoriesRow, type HeroSlide } from "@/compo
 import { CinematicShowcase } from "@/components/fx/cinematic";
 
 export const Route = createFileRoute("/")({
+  loader: () => listTours(),
   head: () => ({
     meta: [
       { title: "DFxTrip — Khám phá khách sạn tuyệt vời" },
       {
         name: "description",
-        content: "Hàng ngàn lựa chọn nghỉ dưỡng chất lượng, giá tốt nhất từ đối tác tại Việt Nam.",
+        content: "Sáu chỗ nghỉ tại Đà Lạt, Nha Trang, Sapa và Hà Nội. Giá phòng và vé Phú Quốc hiện trước khi giữ chỗ.",
       },
       { property: "og:title", content: "DFxTrip — Khám phá khách sạn tuyệt vời" },
       {
         property: "og:description",
-        content: "Hàng ngàn lựa chọn nghỉ dưỡng chất lượng, giá tốt nhất từ đối tác tại Việt Nam.",
+        content: "Sáu chỗ nghỉ tại Đà Lạt, Nha Trang, Sapa và Hà Nội. Giá phòng và vé Phú Quốc hiện trước khi giữ chỗ.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -30,10 +33,10 @@ export const Route = createFileRoute("/")({
 });
 
 const TILES = [
-  { city: "Đà Lạt", img: HOTELS[0]!.image, count: 412 },
-  { city: "Nha Trang", img: HOTELS[2]!.image, count: 538 },
-  { city: "Sapa", img: HOTELS[3]!.image, count: 186 },
-  { city: "Hà Nội", img: HOTELS[5]!.image, count: 924 },
+  { city: "Đà Lạt", img: HOTELS[0]!.image },
+  { city: "Nha Trang", img: HOTELS[2]!.image },
+  { city: "Sapa", img: HOTELS[3]!.image },
+  { city: "Hà Nội", img: HOTELS[5]!.image },
 ];
 
 const HERO_SLIDES: HeroSlide[] = [
@@ -44,6 +47,7 @@ const HERO_SLIDES: HeroSlide[] = [
 ];
 
 function Index() {
+  const featured = Route.useLoaderData().filter((tour) => tour.featured).slice(0, 4);
   return (
     <div>
       {/* HERO */}
@@ -51,7 +55,7 @@ function Index() {
         <div className="mx-auto max-w-6xl px-4 pb-10 pt-14 sm:px-6 md:pb-16 md:pt-24">
           <div className="text-center text-on-image">
             <span className="glass-dark mx-auto mb-5 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold">
-              <Sparkles className="size-3.5" /> Ưu đãi mùa lễ hội · giảm đến 30%
+              <Sparkles className="size-3.5" /> Giảm 10% tiền phòng
             </span>
             <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-tight drop-shadow-sm sm:text-5xl md:text-7xl">
               <TextReveal
@@ -63,7 +67,7 @@ function Index() {
               className="word-reveal mx-auto mt-4 max-w-xl text-sm text-on-image/90 sm:text-lg"
               style={{ "--delay": "450ms" } as CSSProperties}
             >
-              Hàng ngàn lựa chọn nghỉ dưỡng chất lượng, giá tốt nhất từ đối tác.
+              Sáu chỗ nghỉ tại Đà Lạt, Nha Trang, Sapa và Hà Nội. Giá hiện trên từng thẻ.
             </p>
           </div>
 
@@ -78,9 +82,9 @@ function Index() {
 
           <div className="mt-5 flex flex-wrap justify-center gap-2">
             {[
-              { icon: ShieldCheck, t: "Đảm bảo giá tốt nhất" },
-              { icon: Headphones, t: "Hỗ trợ 24/7" },
-              { icon: BadgePercent, t: "Huỷ miễn phí" },
+              { icon: ShieldCheck, t: "Giá hiện trên thẻ" },
+              { icon: Phone, t: "Gọi 0909 686 868" },
+              { icon: BadgePercent, t: "Giảm 10% tiền phòng" },
             ].map(({ icon: Icon, t }, i) => (
               <span
                 key={t}
@@ -101,8 +105,12 @@ function Index() {
             className="group relative block overflow-hidden rounded-3xl bg-secondary text-secondary-foreground"
           >
             <img
-              src="/photos/fireworks.jpg"
+              src="/photos/fireworks.webp"
               alt="Pháo hoa Symphony of the Sea trên biển Phú Quốc"
+              width={1408}
+              height={1408}
+              loading="lazy"
+              decoding="async"
               className="h-56 w-full object-cover opacity-80 transition-transform duration-700 group-hover:scale-105 sm:h-72"
             />
             <div className="absolute inset-0 bg-[image:var(--gradient-image-fade)]" />
@@ -175,6 +183,31 @@ function Index() {
         </Reveal>
       </section>
 
+      <section className="mx-auto mt-16 max-w-7xl px-4 sm:px-6">
+        <Reveal className="mb-5 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Tour nổi bật</p>
+            <h2 className="mt-1 font-display text-2xl font-bold sm:text-4xl">
+              Lịch trình <span className="italic text-primary">đang mở</span>
+            </h2>
+          </div>
+          <Link to="/tour" className="group flex shrink-0 items-center gap-1 text-sm font-semibold text-primary">
+            Xem 15 tour
+            <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+          </Link>
+        </Reveal>
+        <p className="mb-4 max-w-2xl text-sm text-muted-foreground">
+          Giá mỗi khách như niêm yết trong hệ thống. Giữ chỗ trên máy này, chưa phải xác nhận. Nhật Bản và mùa hoa là lịch DFxTrip, không hứa còn chỗ.
+        </p>
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          {featured.map((tour, index) => (
+            <Reveal key={tour.slug} delay={index * 70}>
+              <TourCard tour={tour} />
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
       {/* CINEMATIC SHOWCASE */}
       <section className="mx-auto mt-16 max-w-7xl px-4 sm:px-6">
         <Reveal className="mb-5">
@@ -238,7 +271,9 @@ function Index() {
                 <div className="absolute inset-x-3 bottom-3 flex items-end justify-between text-on-image">
                   <div>
                     <p className="font-display text-xl font-bold sm:text-2xl">{t.city}</p>
-                    <p className="text-xs opacity-90">{t.count} chỗ nghỉ</p>
+                    <p className="text-xs opacity-90">
+                      {HOTELS.filter((hotel) => hotel.city === t.city).length} chỗ nghỉ
+                    </p>
                   </div>
                   <span className="glass-dark grid size-9 place-items-center rounded-full transition-transform duration-500 group-hover:-rotate-45">
                     <ArrowRight className="size-4" />
@@ -265,14 +300,14 @@ function Index() {
                   Đặt nhanh, <span className="italic text-primary-glow">ở sang.</span>
                 </h2>
                 <p className="mt-3 text-sm opacity-80">
-                  Giá minh bạch, xác nhận tức thì và hỗ trợ suốt chuyến đi.
+                  Giá phòng và vé hiện trước khi giữ chỗ. Giữ chỗ lưu trên máy này, chưa phải xác nhận.
                 </p>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { v: 12480, s: "+", l: "Khách sạn" },
-                  { v: 98, s: "%", l: "Hài lòng" },
-                  { v: 24, s: "/7", l: "Hỗ trợ" },
+                  { v: HOTELS.length, s: "", l: "Chỗ nghỉ đang mở" },
+                  { v: 4, s: "", l: "Điểm đến" },
+                  { v: 10, s: "%", l: "Giảm tiền phòng" },
                 ].map((x) => (
                   <div
                     key={x.l}

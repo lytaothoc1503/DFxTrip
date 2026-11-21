@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
   ArrowRight,
@@ -24,6 +24,9 @@ import {
   type Room,
 } from "@/lib/hotels";
 import { createBooking } from "@/lib/bookings";
+import { createPayment } from "@/lib/payment";
+import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { recordServiceBooking } from "@/lib/service-bookings";
 import { HeartButton, imgTransition, Stars } from "@/components/site/hotel-card";
 import { Reveal, SpotlightCard } from "@/components/fx/effects";
 import { Button } from "@/components/ui/button";
@@ -66,6 +69,8 @@ const STAY = { checkIn: "2026-11-20", checkOut: "2026-11-22", guests: 2 };
 
 function HotelDetail() {
   const { hotel } = Route.useLoaderData();
+  const navigate = useNavigate();
+  const { user } = useCurrentUserState();
   const [lightbox, setLightbox] = useState(false);
   const [slide, setSlide] = useState(0);
   const [booking, setBooking] = useState<{ room: Room; price: number } | null>(null);
@@ -91,6 +96,8 @@ function HotelDetail() {
               alt={`${hotel.name} ảnh ${i + 1}`}
               width={1024}
               height={768}
+              loading={i === 0 ? "eager" : "lazy"}
+              decoding="async"
               style={i === 0 ? imgTransition(hotel.id) : undefined}
               className="aspect-[4/3] w-full shrink-0 snap-center object-cover"
             />
@@ -385,8 +392,29 @@ function HotelDetail() {
                       guests: STAY.guests,
                       total: bookingTotal(booking.price, nights),
                     });
-                    setConfirmed(code);
-                    toast.success(`Đã giữ chỗ ${code}`);
+                    const payment = createPayment({
+                      kind: "stay",
+                      ref: code,
+                      title: `${hotel.name} · ${booking.room.name}`,
+                      amount: bookingTotal(booking.price, nights),
+                    });
+                    if (user && !user.isDevFallback) {
+                      try {
+                        await recordServiceBooking({
+                          data: {
+                            serviceType: "hotel",
+                            productId: hotel.id,
+                            roomTier: Math.max(0, ROOMS.findIndex((room) => room.name === booking.room.name)),
+                            nights,
+                            guests: STAY.guests,
+                            basePrice: hotel.price,
+                          },
+                        });
+                      } catch {
+                        // Mã chuyển khoản vẫn mở khi SQL chưa ghi được.
+                      }
+                    }
+                    navigate({ to: "/thanh-toan/$code", params: { code: payment.code } });
                   } catch {
                     toast.error("Chưa giữ được chỗ, thử lại nhé");
                   } finally {
@@ -395,7 +423,7 @@ function HotelDetail() {
                 }}
               >
                 {saving && <Loader2 className="animate-spin" />}
-                Giữ chỗ trên máy này
+                Giữ chỗ và hiện mã chuyển khoản
               </Button>
             </>
           )}

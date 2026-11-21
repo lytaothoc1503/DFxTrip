@@ -115,7 +115,7 @@ export function CinematicShowcase() {
           <p className="mt-5 text-sm text-cine-muted">
             <PixelResolve
               active={done}
-              text="Đã tìm thấy 4 chỗ nghỉ phù hợp · sắp xếp theo đánh giá"
+              text={`Đang xem ${rows.length} chỗ nghỉ đầu danh sách`}
             />
           </p>
 
