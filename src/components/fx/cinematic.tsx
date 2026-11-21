@@ -72,7 +72,7 @@ function useTyping(text: string, active: boolean, cps = 20, startDelay = 500) {
   return text.slice(0, n);
 }
 
-const COMMAND = "Resort ven hồ Đà Lạt, 2 khách, cuối tuần này";
+const COMMAND = "Đà Lạt, resort ven hồ, 2 khách, cuối tuần này";
 
 /**
  * Linear-style cinematic showcase: black void, UI plane in steep perspective,
@@ -84,7 +84,7 @@ export function CinematicShowcase() {
   const typed = useTyping(COMMAND, active);
   const done = typed.length === COMMAND.length;
   const [focus, setFocus] = useState(0);
-  const rows = HOTELS.slice(0, 4);
+  const rows = HOTELS.filter((hotel) => hotel.city === "Đà Lạt");
 
   useEffect(() => {
     if (!done) return;
@@ -116,7 +116,7 @@ export function CinematicShowcase() {
           <p className="mt-5 text-sm text-cine-muted">
             <PixelResolve
               active={done}
-              text={`Đang xem ${rows.length} chỗ nghỉ đầu danh sách`}
+              text={`${rows.length} chỗ nghỉ ở Đà Lạt`}
             />
           </p>
 
@@ -165,7 +165,7 @@ export function CinematicShowcase() {
           DFxTrip
         </p>
         <p className="mt-1 text-xs text-cine-muted sm:text-sm">
-          <PixelResolve active={done} delay={1400} text="Đặt nhanh. Ở sang." />
+          <PixelResolve active={done} delay={1400} text="Giá hiện trước khi giữ chỗ." />
         </p>
       </div>
     </div>

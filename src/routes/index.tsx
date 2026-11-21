@@ -226,10 +226,10 @@ function Index() {
       <section className="mx-auto mt-16 max-w-7xl px-4 sm:px-6">
         <Reveal className="mb-5">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
-            Tìm bằng một câu
+            Cách tìm
           </p>
           <h2 className="mt-1 font-display text-2xl font-bold sm:text-4xl">
-            Gõ điều bạn muốn, <span className="italic text-primary">DFxTrip lo phần còn lại</span>
+            Gõ nơi ở, số khách <span className="italic text-primary">và ngày đi</span>
           </h2>
         </Reveal>
         <CinematicShowcase />
