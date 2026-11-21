@@ -6,6 +6,8 @@ node_modules/
 dist/
 .output/
 .nitro/
+.tanstack/
+.vite/
 *.tsbuildinfo
 
 # secrets
@@ -23,6 +25,12 @@ attachments/
 # sandbox state; keep the auth flag
 .grok/*
 !.grok/app-env.json
+.project_id
+
+# test output
+coverage/
+playwright-report/
+test-results/
 
 # os
 .DS_Store
