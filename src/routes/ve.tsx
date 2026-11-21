@@ -82,7 +82,7 @@ function TicketPage() {
       return;
     }
     const hold = saveHold({
-      id: `SB-${Date.now().toString().slice(-6)}`,
+      id: `SB-${crypto.randomUUID().replace(/-/g, "").slice(0, 10)}`,
       date,
       adults,
       kids,

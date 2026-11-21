@@ -33,7 +33,7 @@ export async function createBooking(input: {
   guests: number;
   total: number;
 }) {
-  const code = `DFX-${Math.floor(10000 + Math.random() * 90000)}`;
+  const code = `DFX-${crypto.randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase()}`;
   const [iy, im, id] = input.checkIn.split("-");
   const [oy, om, od] = input.checkOut.split("-");
   const stay: Stored = {

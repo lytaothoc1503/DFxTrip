@@ -56,11 +56,34 @@ function tryGetRequest(): Request | null {
   }
 }
 
+function configuredPublicHost(): string | null {
+  const url = env("BETTER_AUTH_URL");
+  if (!url) return null;
+  try {
+    return new URL(url).hostname.toLowerCase() || null;
+  } catch {
+    return null;
+  }
+}
+
 function inboundContext(): InboundContext {
   const req = tryGetRequest();
   const xf = req?.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
-  const publicHost =
-    (xf || req?.headers.get("host") || "").split(":")[0]?.trim() || null;
+  const hostHeader = (req?.headers.get("host") || "").split(":")[0]?.trim() || null;
+  // Prefer the configured public URL when deployed. Fall back to Host, then
+  // X-Forwarded-Host only when Host is loopback (local tunnel / preview).
+  // Avoid letting a client-spoofed X-Forwarded-Host become return_to alone.
+  const configured = configuredPublicHost();
+  let publicHost: string | null = configured;
+  if (!publicHost) {
+    if (hostHeader && !isLoopbackHost(hostHeader)) {
+      publicHost = hostHeader;
+    } else if (xf) {
+      publicHost = xf.split(":")[0]?.trim() || null;
+    } else {
+      publicHost = hostHeader;
+    }
+  }
   const headerToken = req?.headers.get(CONNECTOR_TOKEN_HEADER)?.trim() || null;
   const envToken =
     process.env.NODE_ENV === "production"
@@ -176,9 +199,13 @@ function gateSigninUrl(ctx: InboundContext): string | undefined {
     const connectorsHost = new URL(base).host.toLowerCase();
     const gateHost = connectorsHost.replace(/^connectors\./, "gate.");
     if (gateHost === connectorsHost) return undefined;
+    // Only emit return_to for hosts we would also route connectors for
+    // (blocks arbitrary X-Forwarded-Host values that are not gated apps).
     const publicHost = ctx.publicHost?.toLowerCase();
     const gated =
-      publicHost && !isLoopbackHost(publicHost)
+      publicHost &&
+      !isLoopbackHost(publicHost) &&
+      connectorsBaseFor(publicHost) !== null
         ? `https://${publicHost}`
         : undefined;
     const signin = `https://${gateHost}/__gate/signin`;
@@ -229,11 +256,22 @@ function unauthorizedResult(
     noteTokenRejected(token);
     return pendingTokenResult(PENDING_TOKEN_REJECTED);
   }
-  const loginUrl =
-    gateSigninUrl(ctx) ??
-    (typeof json.loginUrl === "string" && json.loginUrl
-      ? json.loginUrl
-      : undefined);
+  const built = gateSigninUrl(ctx);
+  const fromGate =
+    typeof json.loginUrl === "string" && json.loginUrl ? json.loginUrl : undefined;
+  // Prefer the URL we built (known gate host). Only accept a gate-supplied
+  // loginUrl when it points at an allowlisted gate origin.
+  let loginUrl = built;
+  if (!loginUrl && fromGate) {
+    try {
+      const host = new URL(fromGate).hostname.toLowerCase();
+      if (host === "gate.grok.me" || host === "gate.app-builder-testing.com") {
+        loginUrl = fromGate;
+      }
+    } catch {
+      loginUrl = undefined;
+    }
+  }
   return {
     ok: false,
     data: null,

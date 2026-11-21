@@ -1,4 +1,4 @@
-import { TABLES, adultPrice, kidPrice } from "@/lib/services";
+import { TABLES, adultPrice, kidPrice } from "./services.ts";
 
 const WEEKDAY = "2026-11-19";
 const WEEKEND = "2026-11-20";

@@ -181,7 +181,7 @@ export function loadTourHolds() {
 export function saveTourHold(hold: Omit<TourHold, "id" | "createdAt">) {
   const row: TourHold = {
     ...hold,
-    id: `T-${Date.now().toString().slice(-6)}`,
+    id: `T-${crypto.randomUUID().replace(/-/g, "").slice(0, 10)}`,
     createdAt: new Date().toISOString(),
   };
   localStorage.setItem(HOLD_KEY, JSON.stringify([row, ...readHolds()]));
