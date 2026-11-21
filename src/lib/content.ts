@@ -82,8 +82,8 @@ export const GUEST_REVIEWS: GuestReview[] = [
     id: "an-nguyen",
     name: "An Nguyễn",
     text: "Vịnh Lan Hạ thật sự rất đẹp, nước trong xanh và bãi biển hoang sơ. Mình rất hài lòng với dịch vụ.",
-    image: "/tours/tour-ha-long.webp",
-    imageAlt: "Ảnh vịnh dùng kèm lời An Nguyễn, không phải ảnh chân dung",
+    image: "/reviews/an-nguyen.webp",
+    imageAlt: "An Nguyễn cười trên thuyền, mặc áo hoa",
     slugs: ["tour-cat-ba-2n1d"],
   },
   {
