@@ -5,6 +5,8 @@ import { HeartButton } from "@/components/site/hotel-card";
 import { createPayment } from "@/lib/payment";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { recordServiceBooking } from "@/lib/service-bookings";
+import { GuestReviewCard } from "@/components/site/guest-review";
+import { reviewsForTour } from "@/lib/content";
 import { formatVnd, getTourBySlug, saveTourHold, tourTotal } from "@/lib/tours";
 
 export const Route = createFileRoute("/tour/$slug")({
@@ -48,6 +50,7 @@ function TourDetail() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const total = tourTotal(tour, guests);
+  const guestReviews = reviewsForTour(tour.slug);
 
   async function hold() {
     if (name.trim().length < 2 || phone.trim().length < 8) {
@@ -148,6 +151,17 @@ function TourDetail() {
           <p key={paragraph}>{paragraph}</p>
         ))}
       </div>
+
+      {guestReviews.length > 0 ? (
+        <section className="mt-8">
+          <h2 className="font-display text-2xl font-bold">Đánh giá khách hàng</h2>
+          <div className="mt-3 grid gap-4 sm:grid-cols-2">
+            {guestReviews.map((review) => (
+              <GuestReviewCard key={review.id} review={review} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="mt-8 space-y-4 rounded-3xl border bg-card p-4">
         <h2 className="font-display text-2xl font-bold">Giữ chỗ</h2>

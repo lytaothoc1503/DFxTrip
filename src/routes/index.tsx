@@ -5,6 +5,8 @@ import heroImg from "@/assets/hero-dalat.webp";
 import { HOTELS, DESTINATIONS } from "@/lib/hotels";
 import { listTours } from "@/lib/tours";
 import { TourCard } from "@/components/site/tour-card";
+import { GuestReviewCard } from "@/components/site/guest-review";
+import { GUEST_REVIEWS } from "@/lib/content";
 import { HotelRow } from "@/components/site/hotel-card";
 import { SearchBox } from "@/components/site/search-box";
 import { Marquee, NumberTicker, Reveal, TextReveal } from "@/components/fx/effects";
@@ -203,6 +205,25 @@ function Index() {
           {featured.map((tour, index) => (
             <Reveal key={tour.slug} delay={index * 70}>
               <TourCard tour={tour} />
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto mt-16 max-w-7xl px-4 sm:px-6">
+        <Reveal className="mb-5 text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Khách đã đi</p>
+          <h2 className="mt-1 font-display text-2xl font-bold sm:text-4xl">
+            Đánh giá <span className="italic text-primary">khách hàng</span>
+          </h2>
+          <p className="mx-auto mt-2 max-w-xl text-sm text-muted-foreground">
+            Mỗi thẻ là một lời và một ảnh chuyến đi. Không phải điểm sao tổng hợp.
+          </p>
+        </Reveal>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {GUEST_REVIEWS.map((review, index) => (
+            <Reveal key={review.id} delay={index * 60}>
+              <GuestReviewCard review={review} />
             </Reveal>
           ))}
         </div>

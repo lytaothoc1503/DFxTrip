@@ -43,6 +43,64 @@ export function reviewsFor(hotelId: string) {
   return REVIEWS.filter((r) => r.hotelId === hotelId);
 }
 
+/** Nhận xét kèm ảnh, cùng kiểu thẻ trên Wetripx: ảnh khách, tên, lời. */
+export type GuestReview = {
+  id: string;
+  name: string;
+  text: string;
+  image: string;
+  imageAlt: string;
+  slugs: string[];
+};
+
+export const GUEST_REVIEWS: GuestReview[] = [
+  {
+    id: "minh-thao",
+    name: "Minh Thảo",
+    text: "Lần đầu lên Mù Cang Chải, đặt tour được lo từ A đến Z, hướng dẫn viên lại nhiệt tình. Đi đúng mùa lúa nên cảnh đẹp không tả nổi.",
+    image: "/reviews/minh-thao.webp",
+    imageAlt: "Minh Thảo trên ruộng bậc thang mùa lúa chín",
+    slugs: ["tour-mu-cang-chai-2n1d", "tour-mu-cang-chai-3n2d"],
+  },
+  {
+    id: "my-nguyen",
+    name: "My Nguyễn",
+    text: "Trước từng tự đi Mù Cang Chải, mệt vì lo ăn ở. Năm nay đi tour nhàn hơn hẳn, chỉ việc xách balo lên.",
+    image: "/reviews/my-nguyen.webp",
+    imageAlt: "My Nguyễn đứng giữa ruộng lúa vàng",
+    slugs: ["tour-mu-cang-chai-2n1d", "tour-mu-cang-chai-3n2d"],
+  },
+  {
+    id: "quynh-duong",
+    name: "Quỳnh Dương",
+    text: "Sợ nhất là đường đèo Hà Giang, mưa trơn dễ ngã. May có lái xe bản địa, tài xế quen đường, cảm giác đi yên tâm hẳn.",
+    image: "/reviews/quynh-duong.webp",
+    imageAlt: "Quỳnh Dương trên điểm dừng đường đèo",
+    slugs: ["tour-ha-giang-3n2d-xe-may", "tour-ha-giang-o-to"],
+  },
+  {
+    id: "an-nguyen",
+    name: "An Nguyễn",
+    text: "Vịnh Lan Hạ thật sự rất đẹp, nước trong xanh và bãi biển hoang sơ. Mình rất hài lòng với dịch vụ.",
+    image: "/tours/tour-ha-long.webp",
+    imageAlt: "Ảnh vịnh dùng kèm lời An Nguyễn, không phải ảnh chân dung",
+    slugs: ["tour-cat-ba-2n1d"],
+  },
+  {
+    id: "alice-nguyen",
+    name: "Alice Nguyen",
+    text: "Dịch vụ chu đáo, tư vấn kỹ càng, hướng dẫn viên nhiệt tình. Chuyến đi Mù Cang Chải thật sự đáng nhớ.",
+    image: "/reviews/alice-nguyen.webp",
+    imageAlt: "Alice Nguyen ngồi trên ruộng bậc thang lúc hoàng hôn",
+    slugs: ["tour-mu-cang-chai-2n1d", "tour-mu-cang-chai-3n2d"],
+  },
+];
+
+export function reviewsForTour(slug: string) {
+  return GUEST_REVIEWS.filter((review) => review.slugs.includes(slug));
+}
+
+
 export type BlogPost = {
   slug: string;
   title: string;
