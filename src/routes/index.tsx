@@ -30,6 +30,7 @@ export const Route = createFileRoute("/")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "preload", as: "image", href: heroImg, fetchPriority: "high" }],
   }),
   component: Index,
 });
@@ -109,8 +110,8 @@ function Index() {
             <img
               src="/photos/fireworks.webp"
               alt="Pháo hoa Symphony of the Sea trên biển Phú Quốc"
-              width={1408}
-              height={1408}
+              width={1024}
+              height={1024}
               loading="lazy"
               decoding="async"
               className="h-56 w-full object-cover opacity-80 transition-transform duration-700 group-hover:scale-105 sm:h-72"

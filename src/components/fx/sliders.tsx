@@ -90,8 +90,8 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
             key={sl.img}
             src={sl.img}
             alt={sl.caption}
-            width={1600}
-            height={907}
+            width={1280}
+            height={726}
             decoding="async"
             fetchPriority={idx === 0 ? "high" : "low"}
             loading={idx === 0 ? "eager" : "lazy"}

@@ -175,6 +175,23 @@ export default defineConfig(({ command, isPreview }) => ({
             // manifest + head-tag middleware). Nitro v3 defaults serverDir to
             // false, so removing this silently unwires /?install=1 on deploys.
             serverDir: "./server",
+            routeRules: {
+              "/photos/**": {
+                headers: { "cache-control": "public, max-age=86400, stale-while-revalidate=604800" },
+              },
+              "/tours/**": {
+                headers: { "cache-control": "public, max-age=86400, stale-while-revalidate=604800" },
+              },
+              "/reviews/**": {
+                headers: { "cache-control": "public, max-age=86400, stale-while-revalidate=604800" },
+              },
+              "/favicon.svg": {
+                headers: { "cache-control": "public, max-age=86400, stale-while-revalidate=604800" },
+              },
+              "/og.jpg": {
+                headers: { "cache-control": "public, max-age=86400, stale-while-revalidate=604800" },
+              },
+            },
           }),
         ]
       : []),
