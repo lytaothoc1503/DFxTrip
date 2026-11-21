@@ -100,7 +100,7 @@ export function NumberTicker({ value, duration = 1400 }: { value: number; durati
     };
   }, [value, duration]);
   return (
-    <span ref={ref} className="tabular-nums">
+    <span ref={ref} className="tabular-nums" data-count={value}>
       {n.toLocaleString("vi-VN")}
     </span>
   );

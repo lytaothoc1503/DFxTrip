@@ -1,11 +1,10 @@
-# Symphony Sea / VinaStay
+# DFxTrip
 
-Toàn bộ mã nguồn web đặt phòng mẫu và vé Sun Bavaria.
+Website: https://lytaothoc1503.github.io/DFxTrip/
+
+Khách sạn, tour và vé Symphony of the Sea. Ảnh nằm trong `public/photos` và `public/tours`.
 
 ```
 npm install
 npm run dev
 ```
-
-Ảnh `public/photos` không có trong repo vì là file nhị phân.
-Khóa đăng nhập xem trước đã bỏ trống. Auth mặc định tắt.
