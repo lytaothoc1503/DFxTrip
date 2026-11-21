@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DatChoRouteImport } from './routes/dat-cho'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TaiKhoanRouteImport } from './routes/tai-khoan'
 import { Route as VeRouteImport } from './routes/ve'
 import { Route as YeuThichRouteImport } from './routes/yeu-thich'
@@ -35,6 +37,16 @@ const DatChoRoute = DatChoRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TaiKhoanRoute = TaiKhoanRouteImport.update({
@@ -87,6 +99,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dat-cho': typeof DatChoRoute
   '/login': typeof LoginRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tai-khoan': typeof TaiKhoanRoute
   '/ve': typeof VeRoute
   '/yeu-thich': typeof YeuThichRoute
@@ -101,6 +115,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dat-cho': typeof DatChoRoute
   '/login': typeof LoginRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tai-khoan': typeof TaiKhoanRoute
   '/ve': typeof VeRoute
   '/yeu-thich': typeof YeuThichRoute
@@ -116,6 +132,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dat-cho': typeof DatChoRoute
   '/login': typeof LoginRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tai-khoan': typeof TaiKhoanRoute
   '/ve': typeof VeRoute
   '/yeu-thich': typeof YeuThichRoute
@@ -132,6 +150,8 @@ export interface FileRouteTypes {
     | '/'
     | '/dat-cho'
     | '/login'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/tai-khoan'
     | '/ve'
     | '/yeu-thich'
@@ -146,6 +166,8 @@ export interface FileRouteTypes {
     | '/'
     | '/dat-cho'
     | '/login'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/tai-khoan'
     | '/ve'
     | '/yeu-thich'
@@ -160,6 +182,8 @@ export interface FileRouteTypes {
     | '/'
     | '/dat-cho'
     | '/login'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/tai-khoan'
     | '/ve'
     | '/yeu-thich'
@@ -175,6 +199,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DatChoRoute: typeof DatChoRoute
   LoginRoute: typeof LoginRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TaiKhoanRoute: typeof TaiKhoanRoute
   VeRoute: typeof VeRoute
   YeuThichRoute: typeof YeuThichRoute
@@ -207,6 +233,20 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tai-khoan': {
@@ -279,6 +319,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DatChoRoute: DatChoRoute,
   LoginRoute: LoginRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TaiKhoanRoute: TaiKhoanRoute,
   VeRoute: VeRoute,
   YeuThichRoute: YeuThichRoute,
