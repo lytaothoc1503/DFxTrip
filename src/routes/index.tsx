@@ -73,9 +73,9 @@ function Index() {
   const weekend = nextWeekendStay();
   return (
     <div>
-      {/* HERO */}
-      <section className="relative -mt-16 overflow-hidden pt-16">
-        <div className="mx-auto max-w-6xl px-4 pb-10 pt-14 sm:px-6 md:pb-16 md:pt-24">
+      {/* HERO — data-hero-3d-surface bounds lag-follow / drag for the bg layer only */}
+      <section data-hero-3d-surface className="relative -mt-16 overflow-hidden pt-16">
+        <div className="relative z-10 mx-auto max-w-6xl px-4 pb-10 pt-14 sm:px-6 md:pb-16 md:pt-24">
           <div className="text-center text-on-image">
             <span className="glass-dark mx-auto mb-5 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold">
               <Sparkles className="size-3.5" /> Giảm 10% tiền phòng
