@@ -1,20 +1,29 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { CSSProperties } from "react";
 import { ArrowRight, BadgePercent, Phone, ShieldCheck, Sparkles } from "lucide-react";
-import { HOTELS, DESTINATIONS } from "@/lib/hotels";
+import { formatVnd, HOTELS, ratingLabel, type Hotel } from "@/lib/hotels";
 import { listTours } from "@/lib/tours";
 import { TourCard } from "@/components/site/tour-card";
 import { GuestReviewCard } from "@/components/site/guest-review";
 import { GUEST_REVIEWS } from "@/lib/content";
 import { HotelRow } from "@/components/site/hotel-card";
-import { SearchBox } from "@/components/site/search-box";
+import { nextWeekendStay, SearchBox } from "@/components/site/search-box";
 import { Marquee, NumberTicker, Reveal, TextReveal } from "@/components/fx/effects";
-import { CoverflowSlider, HeroSlider, StoriesRow, type HeroSlide } from "@/components/fx/sliders";
+import {
+  CoverflowSlider,
+  HeroSlider,
+  StoriesRow,
+  ThrowRail,
+  type HeroSlide,
+} from "@/components/fx/sliders";
+import { DepthCard } from "@/components/fx/effects";
 import { CinematicShowcase } from "@/components/fx/cinematic";
 import { imgProps } from "@/lib/images";
+import { BRAND } from "@/lib/brand";
 import { pageTitle, seoHead, siteJsonLd } from "@/lib/seo";
 
 const HERO = "/photos/hero-dalat.webp";
+const CITIES_WITH_STAYS = ["Đà Lạt", "Nha Trang", "Sapa", "Hà Nội"] as const;
 
 export const Route = createFileRoute("/")({
   loader: () => listTours(),
@@ -29,13 +38,6 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const TILES = [
-  { city: "Đà Lạt", img: HOTELS[0]!.image },
-  { city: "Nha Trang", img: HOTELS[2]!.image },
-  { city: "Sapa", img: HOTELS[3]!.image },
-  { city: "Hà Nội", img: HOTELS[5]!.image },
-];
-
 const HERO_SLIDES: HeroSlide[] = [
   { img: HERO, city: "Đà Lạt", caption: "Hồ Tuyền Lâm · Đà Lạt" },
   { img: HOTELS[2]!.image, city: "Nha Trang", caption: "Bãi Dài Cam Ranh · Nha Trang" },
@@ -43,13 +45,37 @@ const HERO_SLIDES: HeroSlide[] = [
   { img: HOTELS[5]!.image, city: "Hà Nội", caption: "Phố cổ · Hà Nội" },
 ];
 
+function cityStats(city: string) {
+  const list = HOTELS.filter((hotel) => hotel.city === city);
+  const from = list.reduce((min, hotel) => Math.min(min, hotel.price), Number.POSITIVE_INFINITY);
+  return {
+    city,
+    count: list.length,
+    from: Number.isFinite(from) ? from : 0,
+    img: list[0]?.image ?? HERO,
+  };
+}
+
+const WEEKEND_TILES = CITIES_WITH_STAYS.map(cityStats);
+const DEAL_HOTELS = [...HOTELS]
+  .filter((hotel): hotel is Hotel & { oldPrice: number } => typeof hotel.oldPrice === "number")
+  .sort((a, b) => b.oldPrice / b.price - a.oldPrice / a.price)
+  .slice(0, 6);
+/** List view under the coverflow — skip the first two hero picks. */
+const SUGGESTED = HOTELS.slice(2, 6);
+
+function dealOff(hotel: Hotel & { oldPrice: number }) {
+  return Math.round((1 - hotel.price / hotel.oldPrice) * 100);
+}
+
 function Index() {
   const featured = Route.useLoaderData().filter((tour) => tour.featured).slice(0, 4);
+  const weekend = nextWeekendStay();
   return (
     <div>
-      {/* HERO */}
-      <section className="relative -mt-16 overflow-hidden pt-16">
-        <div className="mx-auto max-w-6xl px-4 pb-10 pt-14 sm:px-6 md:pb-16 md:pt-24">
+      {/* HERO — data-hero-3d-surface bounds lag-follow / drag for the bg layer only */}
+      <section data-hero-3d-surface className="relative -mt-16 overflow-hidden pt-16">
+        <div className="relative z-10 mx-auto max-w-6xl px-4 pb-10 pt-14 sm:px-6 md:pb-16 md:pt-24">
           <div className="text-center text-on-image">
             <span className="glass-dark mx-auto mb-5 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold">
               <Sparkles className="size-3.5" /> Giảm 10% tiền phòng
@@ -71,16 +97,16 @@ function Index() {
           <HeroSlider slides={HERO_SLIDES} />
 
           <div
-            className="word-reveal mt-6 block md:mt-10"
+            className="depth-plane word-reveal relative z-10 mt-6 block md:mt-10"
             style={{ "--delay": "600ms" } as CSSProperties}
           >
-            <SearchBox />
+            <SearchBox showTabs showRecent />
           </div>
 
           <div className="mt-5 flex flex-wrap justify-center gap-2">
             {[
               { icon: ShieldCheck, t: "Giá hiện trên thẻ" },
-              { icon: Phone, t: "Gọi 0909 686 868" },
+              { icon: Phone, t: `Gọi ${BRAND.phoneDisplay}` },
               { icon: BadgePercent, t: "Giảm 10% tiền phòng" },
             ].map(({ icon: Icon, t }, i) => (
               <span
@@ -138,14 +164,14 @@ function Index() {
         </Reveal>
       </section>
 
-      {/* MARQUEE */}
+      {/* MARQUEE — only cities with inventory */}
       <section className="py-6">
         <Marquee>
-          {DESTINATIONS.map((d) => (
+          {CITIES_WITH_STAYS.map((d) => (
             <Link
               key={d}
               to="/khach-san"
-              search={{ dest: d }}
+              search={{ dest: d, in: weekend.checkIn, out: weekend.checkOut }}
               className="shrink-0 rounded-full border bg-card px-5 py-2 text-sm font-medium shadow-[var(--shadow-soft)] transition-all hover:-translate-y-0.5 hover:border-primary hover:text-primary"
             >
               {d}
@@ -154,8 +180,69 @@ function Index() {
         </Marquee>
       </section>
 
-      {/* FEATURED SLIDER */}
+      {/* DEALS */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6">
+        <Reveal className="mb-4 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Ưu đãi hôm nay</p>
+            <h2 className="mt-1 font-display text-2xl font-bold sm:text-4xl">
+              Giá <span className="italic text-primary">đang giảm</span>
+            </h2>
+          </div>
+          <Link
+            to="/khach-san"
+            className="group flex shrink-0 items-center gap-1 text-sm font-semibold text-primary"
+          >
+            Xem tất cả
+            <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+          </Link>
+        </Reveal>
+        <ThrowRail label="Ưu đãi hôm nay">
+          {DEAL_HOTELS.map((hotel) => {
+            const off = dealOff(hotel);
+            return (
+              <div key={hotel.id} className="min-w-0 shrink-0 grow-0 basis-[42%] sm:basis-[28%] lg:basis-[15.5%]">
+                <DepthCard className="h-full rounded-2xl">
+                  <Link
+                    to="/khach-san/$id"
+                    params={{ id: hotel.id }}
+                    className="group block overflow-hidden rounded-2xl border bg-card shadow-[var(--shadow-soft)] transition-shadow hover:shadow-[var(--shadow-lift)]"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <img
+                        {...imgProps(hotel.image, "(min-width: 1024px) 180px, 176px")}
+                        alt={hotel.name}
+                        loading="lazy"
+                        decoding="async"
+                        draggable={false}
+                        className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <span className="absolute left-2 top-2 rounded-md bg-secondary px-2 py-0.5 text-[11px] font-bold text-secondary-foreground">
+                        -{off}%
+                      </span>
+                    </div>
+                    <div className="space-y-1 p-3">
+                      <p className="line-clamp-1 text-sm font-semibold">{hotel.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {hotel.rating.toFixed(1)} · {ratingLabel(hotel.rating)}
+                      </p>
+                      <p className="text-sm font-bold text-primary">
+                        {formatVnd(hotel.price)}
+                        <span className="ml-1 text-xs font-medium text-muted-foreground line-through">
+                          {formatVnd(hotel.oldPrice)}
+                        </span>
+                      </p>
+                    </div>
+                  </Link>
+                </DepthCard>
+              </div>
+            );
+          })}
+        </ThrowRail>
+      </section>
+
+      {/* FEATURED SLIDER */}
+      <section className="mx-auto mt-16 max-w-7xl px-4 sm:px-6">
         <Reveal className="mb-2 flex items-end justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
@@ -235,15 +322,22 @@ function Index() {
         <CinematicShowcase />
       </section>
 
-      {/* SUGGESTIONS (mobile list) */}
-      <section className="mx-auto mt-12 max-w-7xl px-4 sm:px-6 md:hidden">
-        <Reveal className="mb-4">
-          <h2 className="font-display text-xl font-bold">
+      {/* SUGGESTIONS */}
+      <section className="mx-auto mt-12 max-w-7xl px-4 sm:px-6">
+        <Reveal className="mb-4 flex items-end justify-between gap-4">
+          <h2 className="font-display text-xl font-bold sm:text-3xl">
             Gợi ý <span className="italic text-primary">cho bạn</span>
           </h2>
+          <Link
+            to="/khach-san"
+            className="group flex shrink-0 items-center gap-1 text-sm font-semibold text-primary"
+          >
+            Xem thêm
+            <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+          </Link>
         </Reveal>
-        <div className="flex flex-col gap-3">
-          {HOTELS.slice(2, 6).map((h, i) => (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {SUGGESTED.map((h, i) => (
             <Reveal key={h.id} delay={i * 90}>
               <HotelRow hotel={h} />
             </Reveal>
@@ -251,36 +345,43 @@ function Index() {
         </div>
       </section>
 
-      {/* DESTINATIONS BENTO */}
+      {/* DESTINATIONS — inventory cities + Phú Quốc tickets */}
       <section className="mx-auto mt-16 max-w-7xl px-4 sm:px-6">
         <Reveal className="mb-5">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">02 · Điểm đến</p>
           <h2 className="mt-1 font-display text-2xl font-bold sm:text-4xl">
             Đi đâu <span className="italic text-primary">cuối tuần này?</span>
           </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Ngày {weekend.checkIn.slice(8)}/{weekend.checkIn.slice(5, 7)} –{" "}
+            {weekend.checkOut.slice(8)}/{weekend.checkOut.slice(5, 7)}. Chỉ nơi đang có chỗ nghỉ hoặc vé.
+          </p>
         </Reveal>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2 md:gap-4">
-          {TILES.map((t, i) => (
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
+          {WEEKEND_TILES.map((t, i) => (
             <Reveal
               key={t.city}
-              delay={i * 100}
-              className={
-                i === 0 ? "col-span-2 row-span-2 md:col-span-2" : i === 3 ? "md:col-span-2" : ""
-              }
+              delay={i * 80}
+              className={i === 0 ? "col-span-2 md:col-span-1 md:row-span-2" : ""}
             >
               <Link
                 to="/khach-san"
-                search={{ dest: t.city }}
-                className="group relative block h-full min-h-40 overflow-hidden rounded-2xl"
+                search={{
+                  dest: t.city,
+                  in: weekend.checkIn,
+                  out: weekend.checkOut,
+                  adults: 2,
+                  rooms: 1,
+                }}
+                className={
+                  "group relative block overflow-hidden rounded-2xl " +
+                  (i === 0 ? "min-h-56 md:h-full md:min-h-[28rem]" : "min-h-40")
+                }
               >
                 <img
                   {...imgProps(
                     t.img,
-                    i === 0
-                      ? "(min-width: 768px) 50vw, 100vw"
-                      : i === 3
-                        ? "(min-width: 768px) 50vw, 50vw"
-                        : "(min-width: 768px) 25vw, 50vw",
+                    i === 0 ? "(min-width: 768px) 33vw, 100vw" : "(min-width: 768px) 33vw, 50vw",
                   )}
                   alt={t.city}
                   loading="lazy"
@@ -292,7 +393,7 @@ function Index() {
                   <div>
                     <p className="font-display text-xl font-bold sm:text-2xl">{t.city}</p>
                     <p className="text-xs opacity-90">
-                      {HOTELS.filter((hotel) => hotel.city === t.city).length} chỗ nghỉ
+                      {t.count} chỗ nghỉ · từ {formatVnd(t.from)}
                     </p>
                   </div>
                   <span className="glass-dark grid size-9 place-items-center rounded-full transition-transform duration-500 group-hover:-rotate-45">
@@ -302,6 +403,30 @@ function Index() {
               </Link>
             </Reveal>
           ))}
+          <Reveal delay={320} className="col-span-2 md:col-span-2">
+            <Link
+              to="/ve"
+              className="group relative block min-h-40 overflow-hidden rounded-2xl"
+            >
+              <img
+                {...imgProps("/photos/fireworks.webp", "(min-width: 768px) 66vw, 100vw")}
+                alt="Vé Symphony of the Sea Phú Quốc"
+                loading="lazy"
+                decoding="async"
+                className="absolute inset-0 size-full object-cover transition-transform duration-[1.4s] ease-[var(--ease-out-expo)] group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-[image:var(--gradient-image-fade)]" />
+              <div className="absolute inset-x-3 bottom-3 flex items-end justify-between text-on-image">
+                <div>
+                  <p className="font-display text-xl font-bold sm:text-2xl">Phú Quốc</p>
+                  <p className="text-xs opacity-90">Vé Symphony of the Sea · từ 1.200.000đ</p>
+                </div>
+                <span className="glass-dark grid size-9 place-items-center rounded-full transition-transform duration-500 group-hover:-rotate-45">
+                  <ArrowRight className="size-4" />
+                </span>
+              </div>
+            </Link>
+          </Reveal>
         </div>
       </section>
 

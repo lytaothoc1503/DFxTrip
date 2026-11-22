@@ -1,13 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, MapPin } from "lucide-react";
 import { HeartButton } from "@/components/site/hotel-card";
-import { SpotlightCard } from "@/components/fx/effects";
+import { DepthCard } from "@/components/fx/effects";
 import { formatVnd, type Tour } from "@/lib/tours";
 import { imgProps } from "@/lib/images";
 
 export function TourCard({ tour }: { tour: Tour }) {
   return (
-    <SpotlightCard className="h-full rounded-2xl">
+    <DepthCard className="h-full rounded-2xl">
       <Link
         to="/tour/$slug"
         params={{ slug: tour.slug }}
@@ -51,6 +51,6 @@ export function TourCard({ tour }: { tour: Tour }) {
           </div>
         </div>
       </Link>
-    </SpotlightCard>
+    </DepthCard>
   );
 }

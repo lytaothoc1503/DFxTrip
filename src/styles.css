@@ -116,8 +116,17 @@
   --shadow-lift: 0 2px 4px oklch(0.24 0.06 20 / 0.05), 0 24px 48px -20px oklch(0.24 0.06 20 / 0.35);
   --shadow-glow: 0 10px 30px -10px color-mix(in oklab, var(--primary) 60%, transparent);
   --shadow-glass: inset 0 1px 0 oklch(1 0 0 / 0.8), 0 12px 40px -16px oklch(0.24 0.06 20 / 0.35);
+  --shadow-depth: 0 18px 40px -24px oklch(0.24 0.06 20 / 0.45);
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-throw: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Shared depth / 3D motion — DepthCard, coverflow, hero parallax */
+  --depth-perspective: 900px;
+  --tilt-max-x: 5deg;
+  --tilt-max-y: 6deg;
+  --parallax-hero: 12px;
+  --throw-duration: 42;
 
   --chart-1: oklch(0.5 0.19 25);
   --chart-2: oklch(0.27 0.06 20);
@@ -573,6 +582,18 @@
   }
 }
 
+/* Depth plane for search / floating UI over hero */
+@utility depth-plane {
+  transform: translateZ(0);
+  box-shadow: var(--shadow-depth);
+  transition: transform 0.6s var(--ease-throw), box-shadow 0.6s var(--ease-out-expo);
+}
+
+@utility depth-rail {
+  perspective: var(--depth-perspective);
+  transform-style: preserve-3d;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   ::view-transition-old(*),
@@ -592,6 +613,18 @@
   }
   .swipe-chip.is-on {
     animation: none;
+  }
+  .depth-card,
+  .depth-plane,
+  [data-tween],
+  .hero-parallax-layer,
+  .hero-bg-3d-layer {
+    transform: none !important;
+  }
+  :root {
+    --parallax-hero: 0px;
+    --tilt-max-x: 0deg;
+    --tilt-max-y: 0deg;
   }
 }
 

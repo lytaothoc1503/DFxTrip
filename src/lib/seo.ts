@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 import { formatVnd, type Hotel } from "@/lib/hotels";
 
 type Meta = { title?: string; name?: string; content?: string; property?: string };
@@ -47,7 +48,7 @@ export function siteJsonLd() {
         name: "DFxTrip",
         url: "/",
         slogan: "Khám phá. Đặt chỗ. Trải nghiệm.",
-        telephone: "+84909686868",
+        telephone: `+84${BRAND.phoneTel.slice(1)}`,
         areaServed: "VN",
       },
       {
