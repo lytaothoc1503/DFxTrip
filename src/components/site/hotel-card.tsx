@@ -4,7 +4,7 @@ import { useState, type CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 import { formatVnd, ratingLabel, type Hotel } from "@/lib/hotels";
 import { toggleFavorite, useFavorites } from "@/lib/favorites";
-import { SpotlightCard } from "@/components/fx/effects";
+import { DepthCard } from "@/components/fx/effects";
 import { imgProps } from "@/lib/images";
 
 export function Stars({
@@ -77,7 +77,7 @@ export function imgTransition(id: string): CSSProperties {
 
 export function HotelCard({ hotel, eager }: { hotel: Hotel; eager?: boolean }) {
   return (
-    <SpotlightCard className="h-full rounded-2xl">
+    <DepthCard className="h-full rounded-2xl">
       <Link
         to="/khach-san/$id"
         params={{ id: hotel.id }}
@@ -141,7 +141,7 @@ export function HotelCard({ hotel, eager }: { hotel: Hotel; eager?: boolean }) {
           </div>
         </div>
       </Link>
-    </SpotlightCard>
+    </DepthCard>
   );
 }
 

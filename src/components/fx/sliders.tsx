@@ -2,11 +2,19 @@ import { Link } from "@tanstack/react-router";
 import useEmblaCarousel from "embla-carousel-react";
 import type { EmblaCarouselType } from "embla-carousel";
 import { ArrowRight, ChevronLeft, ChevronRight, MapPin, Star, X } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import { cn } from "@/lib/utils";
 import { formatVnd, HOTELS, ratingLabel, type Hotel } from "@/lib/hotels";
 import { HeartButton, imgTransition } from "@/components/site/hotel-card";
 import { imgProps } from "@/lib/images";
+import { usePrefersReducedMotion } from "@/components/fx/effects";
 
 /* ------------------------------------------------------------------ */
 /* Segmented progress bars (shared by hero + stories)                  */
@@ -73,6 +81,8 @@ export type HeroSlide = { img: string; city: string; caption: string };
 export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
+  const reduced = usePrefersReducedMotion();
+  const layerRef = useRef<HTMLDivElement>(null);
   const next = useCallback(() => setI((v) => (v + 1) % slides.length), [slides.length]);
   const prev = () => setI((v) => (v - 1 + slides.length) % slides.length);
 
@@ -82,25 +92,51 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
     return () => document.removeEventListener("visibilitychange", onVis);
   }, []);
 
+  useEffect(() => {
+    if (reduced) return;
+    const layer = layerRef.current;
+    if (!layer) return;
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
+      const x = (e.clientX / window.innerWidth - 0.5) * 2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+      layer.style.transform = `translate3d(calc(${x} * var(--parallax-hero) * -1), calc(${y} * var(--parallax-hero) * -0.6), 0) scale(1.04)`;
+    };
+    const onLeave = () => {
+      layer.style.transform = "";
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerleave", onLeave);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerleave", onLeave);
+    };
+  }, [reduced]);
+
   const s = slides[i]!;
   return (
     <>
       <div className="absolute inset-0 -z-10 overflow-hidden">
-        {slides.map((sl, idx) => (
-          <img
-            key={sl.img}
-            {...imgProps(sl.img, "100vw")}
-            alt=""
-            aria-hidden
-            decoding="async"
-            fetchPriority={idx === 0 ? "high" : "low"}
-            loading={idx === 0 ? "eager" : "lazy"}
-            className={cn(
-              "absolute inset-0 size-full object-cover transition-[opacity,transform,filter] duration-[1400ms] ease-[var(--ease-out-expo)]",
-              idx === i ? "animate-kenburns opacity-100 blur-0" : "scale-110 opacity-0 blur-sm",
-            )}
-          />
-        ))}
+        <div
+          ref={layerRef}
+          className="hero-parallax-layer absolute inset-[-3%] transition-transform duration-700 ease-[var(--ease-throw)] will-change-transform"
+        >
+          {slides.map((sl, idx) => (
+            <img
+              key={sl.img}
+              {...imgProps(sl.img, "100vw")}
+              alt=""
+              aria-hidden
+              decoding="async"
+              fetchPriority={idx === 0 ? "high" : "low"}
+              loading={idx === 0 ? "eager" : "lazy"}
+              className={cn(
+                "absolute inset-0 size-full object-cover transition-[opacity,transform,filter] duration-[1400ms] ease-[var(--ease-out-expo)]",
+                idx === i ? "animate-kenburns opacity-100 blur-0" : "scale-110 opacity-0 blur-sm",
+              )}
+            />
+          ))}
+        </div>
         <div className="absolute inset-0 bg-[image:var(--gradient-hero-fade)]" />
       </div>
 
@@ -181,7 +217,8 @@ function useCoverflowTween(api: EmblaCarouselType | undefined) {
         const v = clamp(1 - Math.abs(diff * factor.current), 0, 1);
         const node = nodes.current[slideIndex];
         if (!node) return;
-        node.style.transform = `scale(${0.84 + 0.16 * v})`;
+        const angle = clamp(diff * factor.current, -1, 1) * -18;
+        node.style.transform = `translateZ(${(v - 0.5) * 28}px) rotateY(${angle}deg) scale(${0.84 + 0.16 * v})`;
         node.style.opacity = String(0.45 + 0.55 * v);
         node.style.setProperty("--focus", String(v));
       });
@@ -204,7 +241,8 @@ function CoverSlide({ hotel }: { hotel: Hotel }) {
   return (
     <div
       data-tween
-      className="h-full transition-[transform,opacity] duration-150 ease-out will-change-transform"
+      className="h-full transition-[transform,opacity] duration-200 ease-[var(--ease-throw)] will-change-transform"
+      style={{ transformStyle: "preserve-3d" }}
     >
       <Link
         to="/khach-san/$id"
@@ -266,7 +304,14 @@ function CoverSlide({ hotel }: { hotel: Hotel }) {
 }
 
 export function CoverflowSlider({ hotels }: { hotels: Hotel[] }) {
-  const [ref, api] = useEmblaCarousel({ loop: true, align: "center" });
+  const reduced = usePrefersReducedMotion();
+  const [ref, api] = useEmblaCarousel({
+    loop: true,
+    align: "center",
+    // Higher duration = longer settle after a throw/release drag.
+    duration: reduced ? 20 : 42,
+    dragFree: false,
+  });
   const [sel, setSel] = useState(0);
   useCoverflowTween(api);
 
@@ -281,7 +326,12 @@ export function CoverflowSlider({ hotels }: { hotels: Hotel[] }) {
   }, [api]);
 
   return (
-    <div className="relative" role="region" aria-roledescription="băng chuyền" aria-label="Khách sạn được yêu thích">
+    <div
+      className="depth-rail relative"
+      role="region"
+      aria-roledescription="băng chuyền"
+      aria-label="Khách sạn được yêu thích"
+    >
       <div ref={ref} className="overflow-hidden py-4">
         <div className="-ml-3 flex touch-pan-y">
           {hotels.map((h) => (
@@ -573,6 +623,36 @@ function StoryViewer({
             </Link>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Horizontal throw/release rail — Embla snap with long settle duration.
+ * Used for deals and other compact card rows that should fling on drag.
+ */
+export function ThrowRail({
+  children,
+  className,
+  label,
+}: {
+  children: ReactNode;
+  className?: string;
+  label: string;
+}) {
+  const reduced = usePrefersReducedMotion();
+  const [ref] = useEmblaCarousel({
+    align: "start",
+    containScroll: "trimSnaps",
+    dragFree: false,
+    duration: reduced ? 18 : 38,
+  });
+
+  return (
+    <div className={cn("depth-rail -mx-4 sm:mx-0", className)} role="region" aria-label={label}>
+      <div ref={ref} className="overflow-hidden px-4 sm:px-0">
+        <div className="flex touch-pan-y gap-3">{children}</div>
       </div>
     </div>
   );
