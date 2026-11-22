@@ -462,7 +462,8 @@
   .depth-card,
   .depth-plane,
   [data-tween],
-  .hero-parallax-layer {
+  .hero-parallax-layer,
+  .hero-bg-3d-layer {
     transform: none !important;
   }
   :root {

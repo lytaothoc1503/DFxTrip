@@ -15,6 +15,7 @@ import { formatVnd, HOTELS, ratingLabel, type Hotel } from "@/lib/hotels";
 import { HeartButton, imgTransition } from "@/components/site/hotel-card";
 import { imgProps } from "@/lib/images";
 import { usePrefersReducedMotion } from "@/components/fx/effects";
+import { attachHeroBg3D } from "@/components/fx/hero-bg-3d";
 
 /* ------------------------------------------------------------------ */
 /* Segmented progress bars (shared by hero + stories)                  */
@@ -82,6 +83,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
   const reduced = usePrefersReducedMotion();
+  const shellRef = useRef<HTMLDivElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
   const next = useCallback(() => setI((v) => (v + 1) % slides.length), [slides.length]);
   const prev = () => setI((v) => (v - 1 + slides.length) % slides.length);
@@ -95,31 +97,24 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
   useEffect(() => {
     if (reduced) return;
     const layer = layerRef.current;
-    if (!layer) return;
-    const onMove = (e: PointerEvent) => {
-      if (e.pointerType !== "mouse") return;
-      const x = (e.clientX / window.innerWidth - 0.5) * 2;
-      const y = (e.clientY / window.innerHeight - 0.5) * 2;
-      layer.style.transform = `translate3d(calc(${x} * var(--parallax-hero) * -1), calc(${y} * var(--parallax-hero) * -0.6), 0) scale(1.04)`;
-    };
-    const onLeave = () => {
-      layer.style.transform = "";
-    };
-    window.addEventListener("pointermove", onMove, { passive: true });
-    window.addEventListener("pointerleave", onLeave);
-    return () => {
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerleave", onLeave);
-    };
+    const shell = shellRef.current;
+    if (!layer || !shell) return;
+    const surface =
+      (shell.closest("[data-hero-3d-surface]") as HTMLElement | null) ??
+      (shell.parentElement as HTMLElement | null);
+    if (!surface) return;
+    return attachHeroBg3D(layer, surface);
   }, [reduced]);
 
   const s = slides[i]!;
   return (
     <>
-      <div className="absolute inset-0 -z-10 overflow-hidden">
+      {/* Image layer + dim overlay only — content below stays untransformed. */}
+      <div ref={shellRef} className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden>
         <div
           ref={layerRef}
-          className="hero-parallax-layer absolute inset-[-3%] transition-transform duration-700 ease-[var(--ease-throw)] will-change-transform"
+          className="hero-bg-3d-layer absolute inset-[-8%] will-change-transform"
+          style={{ transformOrigin: "center center" }}
         >
           {slides.map((sl, idx) => (
             <img
@@ -130,9 +125,14 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
               decoding="async"
               fetchPriority={idx === 0 ? "high" : "low"}
               loading={idx === 0 ? "eager" : "lazy"}
+              draggable={false}
               className={cn(
-                "absolute inset-0 size-full object-cover transition-[opacity,transform,filter] duration-[1400ms] ease-[var(--ease-out-expo)]",
-                idx === i ? "animate-kenburns opacity-100 blur-0" : "scale-110 opacity-0 blur-sm",
+                "absolute inset-0 size-full object-cover transition-[opacity,filter] duration-[1400ms] ease-[var(--ease-out-expo)]",
+                idx === i
+                  ? reduced
+                    ? "opacity-100 blur-0"
+                    : "animate-kenburns opacity-100 blur-0"
+                  : "scale-110 opacity-0 blur-sm",
               )}
             />
           ))}
@@ -141,9 +141,10 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
       </div>
 
       <div
-        className="mx-auto mt-6 flex max-w-md items-center gap-3 md:mt-8"
+        className="relative z-10 mx-auto mt-6 flex max-w-md items-center gap-3 md:mt-8"
         role="group"
         aria-label="Ảnh điểm đến"
+        data-hero-3d-ignore
         onPointerEnter={(e) => e.pointerType === "mouse" && setPaused(true)}
         onPointerLeave={() => setPaused(false)}
       >
