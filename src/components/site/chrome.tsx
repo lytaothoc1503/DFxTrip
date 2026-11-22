@@ -176,18 +176,91 @@ export function TabBar() {
   );
 }
 
+const FOOTER_PRODUCTS = [
+  { to: "/khach-san", label: "Khách sạn" },
+  { to: "/tour", label: "Tour" },
+  { to: "/ve", label: "Vé Phú Quốc" },
+  { to: "/dat-cho", label: "Đặt chỗ" },
+] as const;
+
+const FOOTER_DESTINATIONS = [
+  { to: "/khach-san", search: { dest: "Đà Lạt" }, label: "Đà Lạt" },
+  { to: "/khach-san", search: { dest: "Nha Trang" }, label: "Nha Trang" },
+  { to: "/khach-san", search: { dest: "Sapa" }, label: "Sapa" },
+  { to: "/khach-san", search: { dest: "Hà Nội" }, label: "Hà Nội" },
+  { to: "/ve", label: "Phú Quốc · vé show" },
+] as const;
+
 export function SiteFooter() {
   return (
-    <footer className="mt-20 border-t bg-card pb-28 pt-10 md:pb-10">
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 sm:px-6 md:flex-row md:items-center md:justify-between">
-        <Logo />
-        <p className="text-sm text-muted-foreground">
-          DFxTrip giữ chỗ trên máy này, chưa phải xác nhận. Gọi{" "}
-          <a href={phoneHref()} className="font-semibold text-primary">
-            {BRAND.phoneDisplay}
-          </a>
-          .
-        </p>
+    <footer className="mt-20 border-t bg-card pb-28 pt-10 md:pb-12">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 md:grid-cols-[1.2fr_1fr_1fr_1fr]">
+        <div className="space-y-3">
+          <Logo />
+          <p className="max-w-sm text-sm text-muted-foreground">
+            DFxTrip giữ chỗ trên máy này, chưa phải xác nhận. Gọi{" "}
+            <a href={phoneHref()} className="font-semibold text-primary">
+              {BRAND.phoneDisplay}
+            </a>
+            .
+          </p>
+        </div>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Sản phẩm</p>
+          <ul className="mt-3 space-y-2 text-sm">
+            {FOOTER_PRODUCTS.map((item) => (
+              <li key={item.to}>
+                <Link to={item.to} className="text-muted-foreground transition-colors hover:text-primary">
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Điểm đến</p>
+          <ul className="mt-3 space-y-2 text-sm">
+            {FOOTER_DESTINATIONS.map((item) => (
+              <li key={item.label}>
+                {"search" in item ? (
+                  <Link
+                    to={item.to}
+                    search={item.search}
+                    className="text-muted-foreground transition-colors hover:text-primary"
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <Link to={item.to} className="text-muted-foreground transition-colors hover:text-primary">
+                    {item.label}
+                  </Link>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Hỗ trợ</p>
+          <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+            <li>
+              Hotline{" "}
+              <a href={phoneHref()} className="font-semibold text-primary">
+                {BRAND.phoneDisplay}
+              </a>
+            </li>
+            <li>
+              <a
+                href={BRAND.zaloUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="transition-colors hover:text-primary"
+              >
+                Zalo hỗ trợ
+              </a>
+            </li>
+            <li>{BRAND.supportNote}</li>
+          </ul>
+        </div>
       </div>
     </footer>
   );
