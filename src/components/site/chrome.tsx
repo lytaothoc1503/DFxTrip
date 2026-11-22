@@ -37,6 +37,7 @@ const NAV = [
   { to: "/", label: "Trang chủ" },
   { to: "/khach-san", label: "Khách sạn" },
   { to: "/tour", label: "Tour" },
+  { to: "/ve", label: "Vé" },
   { to: "/dat-cho", label: "Đặt chỗ" },
   { to: "/yeu-thich", label: "Yêu thích" },
 ] as const;
@@ -124,9 +125,13 @@ const TABS = [
 
 export function TabBar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isDetail = /^\/khach-san\/[^/]+/.test(pathname);
+  const hideTabs =
+    /^\/khach-san\/[^/]+/.test(pathname) ||
+    /^\/tour\/[^/]+/.test(pathname) ||
+    pathname === "/thanh-toan" ||
+    pathname.startsWith("/thanh-toan/");
   const idx = TABS.findIndex((t) => (t.to === "/" ? pathname === "/" : pathname.startsWith(t.to)));
-  if (isDetail) return null;
+  if (hideTabs) return null;
 
   return (
     <nav

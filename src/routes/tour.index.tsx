@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { TourCard } from "@/components/site/tour-card";
-import { Reveal } from "@/components/fx/effects";
+import { Reveal, SwipeRail } from "@/components/fx/effects";
 import { listTours, TOUR_GROUPS, toursInGroup } from "@/lib/tours";
 import { pageTitle, seoHead, tourListJsonLd } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -29,14 +29,16 @@ function TourIndex() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 pb-28 pt-6 sm:px-6">
-      <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Lịch trình</p>
-      <h1 className="mt-1 font-display text-3xl font-bold sm:text-5xl">
-        Tour và <span className="italic text-primary">vé xe</span>
-      </h1>
-      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-        {tours.length} sản phẩm đang niêm yết trong hệ thống. Giá là mỗi khách. Giữ chỗ lưu trên máy này, chưa phải chỗ đã xác nhận. Lịch Nhật và mùa hoa là lịch DFxTrip, ngày chốt khi xác nhận.
-      </p>
-      <div className="no-scrollbar mt-5 flex gap-2 overflow-x-auto pb-1">
+      <Reveal variant="swipe">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Lịch trình</p>
+        <h1 className="mt-1 font-display text-3xl font-bold sm:text-5xl">
+          Tour và <span className="italic text-primary">vé xe</span>
+        </h1>
+        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+          {tours.length} sản phẩm đang niêm yết trong hệ thống. Giá là mỗi khách. Giữ chỗ lưu trên máy này, chưa phải chỗ đã xác nhận. Lịch Nhật và mùa hoa là lịch DFxTrip, ngày chốt khi xác nhận.
+        </p>
+      </Reveal>
+      <SwipeRail className="mt-5">
         <FilterChip active={group === "all"} onClick={() => setGroup("all")}>
           {`Tất cả · ${tours.length}`}
         </FilterChip>
@@ -45,11 +47,11 @@ function TourIndex() {
             {item.title}
           </FilterChip>
         ))}
-      </div>
+      </SwipeRail>
       {current ? <p className="mt-3 text-sm text-muted-foreground">{current.text}</p> : null}
-      <ul className="mt-6 grid list-none gap-5 p-0 sm:grid-cols-2 xl:grid-cols-3">
+      <ul key={group} className="mt-6 grid list-none gap-5 p-0 sm:grid-cols-2 xl:grid-cols-3">
         {list.map((tour, index) => (
-          <Reveal key={tour.slug} as="li" delay={index * 60}>
+          <Reveal key={tour.slug} as="li" delay={index * 55} variant="toss">
             <TourCard tour={tour} />
           </Reveal>
         ))}
@@ -78,8 +80,9 @@ function FilterChip({
       type="button"
       onClick={onClick}
       className={cn(
-        "shrink-0 rounded-full border px-4 py-2 text-sm font-medium",
-        active ? "border-primary bg-accent text-accent-foreground" : "bg-card",
+        "swipe-chip shrink-0 rounded-full border px-4 py-2 text-sm font-medium",
+        active && "is-on",
+        active ? "border-primary bg-accent text-accent-foreground shadow-[var(--shadow-glow)]" : "bg-card",
       )}
     >
       {children}

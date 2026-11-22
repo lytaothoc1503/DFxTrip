@@ -1,17 +1,21 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-/** Fade + blur + rise when scrolled into view. */
+export type RevealVariant = "rise" | "toss" | "swipe";
+
+/** Fade + blur + rise (or toss / swipe) when scrolled into view. */
 export function Reveal({
   children,
   delay = 0,
   className,
   as: Tag = "div",
+  variant = "rise",
 }: {
   children: ReactNode;
   delay?: number;
   className?: string;
   as?: "div" | "section" | "li" | "article";
+  variant?: RevealVariant;
 }) {
   const ref = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
@@ -34,11 +38,32 @@ export function Reveal({
     <Tag
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ref={ref as any}
-      className={cn("reveal", visible && "is-visible", className)}
+      className={cn(
+        "reveal",
+        variant === "toss" && "reveal-toss",
+        variant === "swipe" && "reveal-swipe",
+        visible && "is-visible",
+        className,
+      )}
       style={{ "--delay": `${delay}ms` } as CSSProperties}
     >
       {children}
     </Tag>
+  );
+}
+
+/** Horizontal touch-friendly rail with scroll snap (lướt). */
+export function SwipeRail({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("no-scrollbar swipe-rail flex gap-2 overflow-x-auto pb-1", className)}>
+      {children}
+    </div>
   );
 }
 

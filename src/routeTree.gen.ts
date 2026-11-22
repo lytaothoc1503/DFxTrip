@@ -20,6 +20,7 @@ import { Route as VeRouteImport } from './routes/ve'
 import { Route as YeuThichRouteImport } from './routes/yeu-thich'
 import { Route as KhachSanIndexRouteImport } from './routes/khach-san.index'
 import { Route as KhachSanIdRouteImport } from './routes/khach-san.$id'
+import { Route as ThanhToanIndexRouteImport } from './routes/thanh-toan.index'
 import { Route as ThanhToanCodeRouteImport } from './routes/thanh-toan.$code'
 import { Route as TourIndexRouteImport } from './routes/tour.index'
 import { Route as TourSlugRouteImport } from './routes/tour.$slug'
@@ -80,6 +81,11 @@ const KhachSanIdRoute = KhachSanIdRouteImport.update({
   path: '/khach-san/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ThanhToanIndexRoute = ThanhToanIndexRouteImport.update({
+  id: '/thanh-toan/',
+  path: '/thanh-toan/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ThanhToanCodeRoute = ThanhToanCodeRouteImport.update({
   id: '/thanh-toan/$code',
   path: '/thanh-toan/$code',
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/thanh-toan/$code': typeof ThanhToanCodeRoute
   '/tour/$slug': typeof TourSlugRoute
   '/khach-san/': typeof KhachSanIndexRoute
+  '/thanh-toan/': typeof ThanhToanIndexRoute
   '/tour/': typeof TourIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -132,6 +139,7 @@ export interface FileRoutesByTo {
   '/thanh-toan/$code': typeof ThanhToanCodeRoute
   '/tour/$slug': typeof TourSlugRoute
   '/khach-san': typeof KhachSanIndexRoute
+  '/thanh-toan': typeof ThanhToanIndexRoute
   '/tour': typeof TourIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/thanh-toan/$code': typeof ThanhToanCodeRoute
   '/tour/$slug': typeof TourSlugRoute
   '/khach-san/': typeof KhachSanIndexRoute
+  '/thanh-toan/': typeof ThanhToanIndexRoute
   '/tour/': typeof TourIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/thanh-toan/$code'
     | '/tour/$slug'
     | '/khach-san/'
+    | '/thanh-toan/'
     | '/tour/'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
@@ -186,6 +196,7 @@ export interface FileRouteTypes {
     | '/thanh-toan/$code'
     | '/tour/$slug'
     | '/khach-san'
+    | '/thanh-toan'
     | '/tour'
     | '/api/auth/$'
   id:
@@ -203,6 +214,7 @@ export interface FileRouteTypes {
     | '/thanh-toan/$code'
     | '/tour/$slug'
     | '/khach-san/'
+    | '/thanh-toan/'
     | '/tour/'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
@@ -221,6 +233,7 @@ export interface RootRouteChildren {
   ThanhToanCodeRoute: typeof ThanhToanCodeRoute
   TourSlugRoute: typeof TourSlugRoute
   KhachSanIndexRoute: typeof KhachSanIndexRoute
+  ThanhToanIndexRoute: typeof ThanhToanIndexRoute
   TourIndexRoute: typeof TourIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
@@ -304,6 +317,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KhachSanIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/thanh-toan/': {
+      id: '/thanh-toan/'
+      path: '/thanh-toan'
+      fullPath: '/thanh-toan/'
+      preLoaderRoute: typeof ThanhToanIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/thanh-toan/$code': {
       id: '/thanh-toan/$code'
       path: '/thanh-toan/$code'
@@ -349,6 +369,7 @@ const rootRouteChildren: RootRouteChildren = {
   ThanhToanCodeRoute: ThanhToanCodeRoute,
   TourSlugRoute: TourSlugRoute,
   KhachSanIndexRoute: KhachSanIndexRoute,
+  ThanhToanIndexRoute: ThanhToanIndexRoute,
   TourIndexRoute: TourIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }

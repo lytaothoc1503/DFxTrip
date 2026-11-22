@@ -51,7 +51,7 @@ function FavoritesPage() {
           {tours.length > 0 ? (
             <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {tours.map((tour, index) => (
-                <Reveal key={tour.slug} delay={index * 80}>
+                <Reveal key={tour.slug} delay={index * 70} variant="toss">
                   <TourCard tour={tour} />
                 </Reveal>
               ))}
@@ -60,7 +60,7 @@ function FavoritesPage() {
           {hotels.length > 0 ? (
             <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {hotels.map((hotel, index) => (
-                <Reveal key={hotel.id} delay={index * 80}>
+                <Reveal key={hotel.id} delay={index * 70} variant="toss">
                   <HotelCard hotel={hotel} />
                 </Reveal>
               ))}

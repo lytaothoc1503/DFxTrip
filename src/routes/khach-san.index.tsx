@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { HOTELS, DESTINATIONS, hotelMatchesQuery, foldVi } from "@/lib/hotels";
 import { HotelCard, HotelRow } from "@/components/site/hotel-card";
 import { DEFAULT_FILTERS, Filters, type FilterState } from "@/components/site/filters";
-import { NumberTicker, Reveal } from "@/components/fx/effects";
+import { NumberTicker, Reveal, SwipeRail } from "@/components/fx/effects";
 import { SearchBox, DEFAULT_STAY } from "@/components/site/search-box";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -157,68 +157,71 @@ function SearchPage() {
       </div>
 
       {/* Toolbar */}
-      <div className="no-scrollbar sticky top-16 z-30 -mx-4 mt-4 flex items-center gap-2 overflow-x-auto bg-background/80 px-4 py-3 backdrop-blur-md sm:-mx-6 sm:px-6">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" className="shrink-0 rounded-full lg:hidden">
-              <SlidersHorizontal /> Bộ lọc
-              {activeCount > 0 && (
-                <span className="grid size-5 place-items-center rounded-full bg-primary text-[10px] text-primary-foreground">
-                  {activeCount}
-                </span>
-              )}
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-3xl">
-            <SheetHeader>
-              <SheetTitle>Bộ lọc</SheetTitle>
-            </SheetHeader>
-            <div className="px-4 pb-8">
-              <Filters value={filters} onChange={setFilters} />
-            </div>
-          </SheetContent>
-        </Sheet>
-        {SORTS.map((s) => (
-          <button
-            key={s.id}
-            onClick={() => setSort(s.id)}
-            className={cn(
-              "shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-all duration-300",
-              sort === s.id
-                ? "border-primary bg-primary text-primary-foreground shadow-[var(--shadow-glow)]"
-                : "bg-card hover:border-primary hover:text-primary",
-            )}
-          >
-            {s.label}
-          </button>
-        ))}
-        {dest && (
-          <Link
-            to="/khach-san"
-            search={{ in: checkIn, out: checkOut, adults, rooms }}
-            className="flex shrink-0 items-center gap-1 rounded-full bg-accent px-3 py-2 text-sm font-medium text-accent-foreground"
-          >
-            {dest} <X className="size-3.5" />
-          </Link>
-        )}
-        <div className="ml-auto hidden shrink-0 gap-1 rounded-full border bg-card p-1 md:flex">
-          {(["grid", "list"] as const).map((v) => {
-            const Icon = v === "grid" ? LayoutGrid : List;
-            return (
-              <button
-                key={v}
-                aria-label={v === "grid" ? "Dạng lưới" : "Dạng danh sách"}
-                onClick={() => setView(v)}
-                className={cn(
-                  "grid size-8 place-items-center rounded-full transition-colors",
-                  view === v ? "bg-accent text-accent-foreground" : "text-muted-foreground",
+      <div className="scene-sticky sticky top-16 z-30 -mx-4 mt-4 px-4 py-3 backdrop-blur-md sm:-mx-6 sm:px-6">
+        <SwipeRail className="items-center">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" className="swipe-chip shrink-0 rounded-full lg:hidden">
+                <SlidersHorizontal /> Bộ lọc
+                {activeCount > 0 && (
+                  <span className="grid size-5 place-items-center rounded-full bg-primary text-[10px] text-primary-foreground">
+                    {activeCount}
+                  </span>
                 )}
-              >
-                <Icon className="size-4" />
-              </button>
-            );
-          })}
-        </div>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-3xl">
+              <SheetHeader>
+                <SheetTitle>Bộ lọc</SheetTitle>
+              </SheetHeader>
+              <div className="px-4 pb-8">
+                <Filters value={filters} onChange={setFilters} />
+              </div>
+            </SheetContent>
+          </Sheet>
+          {SORTS.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => setSort(s.id)}
+              className={cn(
+                "swipe-chip shrink-0 rounded-full border px-4 py-2 text-sm font-medium",
+                sort === s.id && "is-on",
+                sort === s.id
+                  ? "border-primary bg-primary text-primary-foreground shadow-[var(--shadow-glow)]"
+                  : "bg-card hover:border-primary hover:text-primary",
+              )}
+            >
+              {s.label}
+            </button>
+          ))}
+          {dest && (
+            <Link
+              to="/khach-san"
+              search={{ in: checkIn, out: checkOut, adults, rooms }}
+              className="swipe-chip flex shrink-0 items-center gap-1 rounded-full bg-accent px-3 py-2 text-sm font-medium text-accent-foreground"
+            >
+              {dest} <X className="size-3.5" />
+            </Link>
+          )}
+          <div className="ml-auto hidden shrink-0 gap-1 rounded-full border bg-card p-1 md:flex">
+            {(["grid", "list"] as const).map((v) => {
+              const Icon = v === "grid" ? LayoutGrid : List;
+              return (
+                <button
+                  key={v}
+                  aria-label={v === "grid" ? "Dạng lưới" : "Dạng danh sách"}
+                  onClick={() => setView(v)}
+                  className={cn(
+                    "grid size-8 place-items-center rounded-full transition-colors",
+                    view === v ? "bg-accent text-accent-foreground" : "text-muted-foreground",
+                  )}
+                >
+                  <Icon className="size-4" />
+                </button>
+              );
+            })}
+          </div>
+        </SwipeRail>
       </div>
 
       <div className="mt-2 grid gap-6 lg:grid-cols-[260px_1fr]">
@@ -276,7 +279,7 @@ function SearchPage() {
                 )}
               >
                 {results.map((h, i) => (
-                  <Reveal key={h.id} delay={i * 80}>
+                  <Reveal key={h.id} delay={i * 70} variant="toss">
                     {view === "grid" ? (
                       <HotelCard hotel={h} eager={i < 3} />
                     ) : (
@@ -287,7 +290,7 @@ function SearchPage() {
               </div>
               <div className="flex flex-col gap-4 md:hidden">
                 {results.map((h, i) => (
-                  <Reveal key={h.id} delay={i * 70}>
+                  <Reveal key={h.id} delay={i * 60} variant={i % 2 === 0 ? "toss" : "swipe"}>
                     <HotelCard hotel={h} eager={i < 2} />
                   </Reveal>
                 ))}
