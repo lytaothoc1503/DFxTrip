@@ -7,9 +7,9 @@ export const BRAND = {
   discountLabel: "Ưu đãi VinaStay 10%",
   /** Giảm 10% trên tổng tiền phòng (khớp DFxTrip / tài liệu). */
   discountRate: 0.1,
-  phoneDisplay: "0909 686 868",
-  phoneTel: "0909686868",
-  zaloUrl: "https://zalo.me/0909686868",
+  phoneDisplay: "0358 341 934",
+  phoneTel: "0358341934",
+  zaloUrl: "https://zalo.me/0358341934",
   address: "Phú Quốc, Kiên Giang, Việt Nam",
   supportNote: "Hỗ trợ 24/7 qua Zalo hoặc điện thoại. Giữ chỗ trên máy chưa phải xác nhận chính thức.",
 } as const;
