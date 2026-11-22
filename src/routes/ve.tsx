@@ -7,6 +7,8 @@ import { imgProps } from "@/lib/images";
 import { createPayment } from "@/lib/payment";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { recordServiceBooking } from "@/lib/service-bookings";
+import { Reveal, SwipeRail } from "@/components/fx/effects";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/ve")({
   head: () =>
@@ -125,14 +127,16 @@ function TicketPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 pb-28 pt-6 sm:px-6">
-      <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Sự kiện Phú Quốc</p>
-      <h1 className="mt-1 font-display text-4xl font-bold leading-tight">Symphony of the Sea</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Sun Bavaria, Thị trấn Hoàng Hôn. Phụ thu bàn sát biển đang chạy thử, chưa có thông báo chính thức. Khách đăng ký
-        nâng cấp tại nhà hàng.
-      </p>
+      <Reveal variant="swipe">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Sự kiện Phú Quốc</p>
+        <h1 className="mt-1 font-display text-4xl font-bold leading-tight">Symphony of the Sea</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Sun Bavaria, Thị trấn Hoàng Hôn. Phụ thu bàn sát biển đang chạy thử, chưa có thông báo chính thức. Khách đăng ký
+          nâng cấp tại nhà hàng.
+        </p>
+      </Reveal>
 
-      <section className="mt-5 overflow-hidden rounded-3xl border bg-card">
+      <Reveal as="section" className="mt-5 overflow-hidden rounded-3xl border bg-card" delay={80} variant="toss">
         <h2 className="bg-secondary px-4 py-3 text-center font-semibold text-secondary-foreground">
           Lịch trình buổi tối
         </h2>
@@ -154,12 +158,28 @@ function TicketPage() {
             </li>
           ))}
         </ul>
-      </section>
+      </Reveal>
 
-      <section className="mt-5 overflow-hidden rounded-3xl border bg-card">
+      <Reveal as="section" className="mt-5 overflow-hidden rounded-3xl border bg-card" delay={140} variant="toss">
         <h2 className="bg-secondary px-4 py-3 text-center font-semibold text-secondary-foreground">
           Phụ thu theo loại bàn
         </h2>
+        <SwipeRail className="gap-0 border-b px-0 sm:hidden">
+          {TABLES.map((table) => (
+            <button
+              key={`m-${table.id}`}
+              type="button"
+              onClick={() => setTableId(table.id)}
+              className={cn(
+                "swipe-chip m-2 shrink-0 rounded-2xl border px-4 py-3 text-left text-sm",
+                tableId === table.id && "is-on border-primary bg-accent",
+              )}
+            >
+              <span className="block font-semibold">{table.label}</span>
+              <span className="text-muted-foreground">{formatVnd(table.fee)}</span>
+            </button>
+          ))}
+        </SwipeRail>
         <button
           type="button"
           onClick={() => setTableId("none")}
@@ -173,21 +193,21 @@ function TicketPage() {
             key={table.id}
             type="button"
             onClick={() => setTableId(table.id)}
-            className={`grid w-full grid-cols-2 border-t px-4 py-4 text-left ${tableId === table.id ? "bg-accent" : ""}`}
+            className={`hidden w-full grid-cols-2 border-t px-4 py-4 text-left sm:grid ${tableId === table.id ? "bg-accent" : ""}`}
           >
             <span>{table.label}</span>
             <span className="text-right font-semibold text-primary">{formatVnd(table.fee)}</span>
           </button>
         ))}
-      </section>
+      </Reveal>
 
-      <section className="mt-6 space-y-4 rounded-3xl border bg-card p-4">
+      <Reveal as="section" className="mt-6 space-y-4 rounded-3xl border bg-card p-4" delay={200} variant="swipe">
         <label className="block">
           <span className="font-medium">Ngày đến</span>
           <span className="mt-1 block text-sm text-muted-foreground">
             Bấm một ngày để so giá người lớn. Thứ Sáu và thứ Bảy là 1.300.000đ, các ngày khác 1.200.000đ.
           </span>
-          <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
+          <SwipeRail className="mt-2">
             {priceDays(todayIso()).map((day) => {
               const selected = day.iso === date;
               return (
@@ -197,7 +217,11 @@ function TicketPage() {
                   aria-pressed={selected}
                   aria-label={`${day.weekday} ${day.day}, người lớn ${formatVnd(day.adult)}`}
                   onClick={() => setDate(day.iso)}
-                  className={`w-20 shrink-0 rounded-2xl border px-2 py-2 text-center ${selected ? "border-primary bg-accent" : "bg-background"}`}
+                  className={cn(
+                    "swipe-chip w-20 shrink-0 rounded-2xl border px-2 py-2 text-center",
+                    selected && "is-on",
+                    selected ? "border-primary bg-accent" : "bg-background",
+                  )}
                 >
                   <span className="block text-xs text-muted-foreground">{day.weekday}</span>
                   <span className="block text-lg font-semibold">{day.day}</span>
@@ -207,7 +231,7 @@ function TicketPage() {
                 </button>
               );
             })}
-          </div>
+          </SwipeRail>
           <input
             type="date"
             value={date}
@@ -260,7 +284,7 @@ function TicketPage() {
         >
           Giữ vé và hiện mã chuyển khoản
         </button>
-      </section>
+      </Reveal>
     </div>
   );
 }

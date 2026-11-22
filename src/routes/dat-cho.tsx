@@ -6,6 +6,7 @@ import { formatVnd as money, loadHolds, removeHold, tableById } from "@/lib/serv
 import { createPayment, paymentByRef } from "@/lib/payment";
 import { listTours, loadTourHolds, removeTourHold } from "@/lib/tours";
 import { pageTitle, seoHead } from "@/lib/seo";
+import { Reveal } from "@/components/fx/effects";
 
 export const Route = createFileRoute("/dat-cho")({
   loader: () => listTours(),
@@ -33,12 +34,15 @@ function HoldsPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 pb-28 pt-6 sm:px-6">
-      <h1 className="font-display text-3xl font-bold sm:text-4xl">
-        Đặt chỗ <span className="italic text-primary">trên máy</span>
-      </h1>
-      <p className="mt-2 text-sm text-muted-foreground">Chưa phải phòng, tour hay vé đã xác nhận.</p>
+      <Reveal variant="swipe">
+        <h1 className="font-display text-3xl font-bold sm:text-4xl">
+          Đặt chỗ <span className="italic text-primary">trên máy</span>
+        </h1>
+        <p className="mt-2 text-sm text-muted-foreground">Chưa phải phòng, tour hay vé đã xác nhận.</p>
+      </Reveal>
 
-      <h2 className="mt-8 font-display text-2xl font-bold">Phòng</h2>
+      <Reveal as="section" className="mt-8" delay={60} variant="toss">
+      <h2 className="font-display text-2xl font-bold">Phòng</h2>
       {stays.length === 0 ? (
         <p className="mt-3 text-sm text-muted-foreground">Chưa giữ phòng.</p>
       ) : (
@@ -70,8 +74,10 @@ function HoldsPage() {
           })}
         </ul>
       )}
+      </Reveal>
 
-      <h2 className="mt-8 font-display text-2xl font-bold">Tour</h2>
+      <Reveal as="section" className="mt-8" delay={120} variant="toss">
+      <h2 className="font-display text-2xl font-bold">Tour</h2>
       {tours.length === 0 ? (
         <p className="mt-3 text-sm text-muted-foreground">
           Chưa giữ tour.{" "}
@@ -103,8 +109,10 @@ function HoldsPage() {
           })}
         </ul>
       )}
+      </Reveal>
 
-      <h2 className="mt-8 font-display text-2xl font-bold">Vé Symphony of the Sea</h2>
+      <Reveal as="section" className="mt-8" delay={180} variant="swipe">
+      <h2 className="font-display text-2xl font-bold">Vé Symphony of the Sea</h2>
       {holds.length === 0 ? (
         <p className="mt-3 text-sm text-muted-foreground">
           Chưa giữ vé.{" "}
@@ -136,6 +144,7 @@ function HoldsPage() {
           })}
         </ul>
       )}
+      </Reveal>
     </div>
   );
 }

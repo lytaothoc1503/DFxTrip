@@ -5,6 +5,7 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { SiteFooter, SiteHeader, TabBar } from "@/components/site/chrome";
 import { useViewTransitionFallback } from "@/components/fx/effects";
+import { resolvePageScene } from "@/lib/page-scene";
 import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
 
@@ -115,10 +116,16 @@ function Root() {
 function Frame() {
   useViewTransitionFallback();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const scene = resolvePageScene(pathname);
   return (
     <>
       <SiteHeader />
-      <main id="noi-dung" key={pathname} className="page-enter min-h-[70vh]">
+      <main
+        id="noi-dung"
+        key={pathname}
+        data-scene={scene}
+        className="page-enter page-scene min-h-[70vh]"
+      >
         <Outlet />
       </main>
       <SiteFooter />
