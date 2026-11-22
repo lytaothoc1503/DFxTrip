@@ -106,8 +106,24 @@ export function NumberTicker({ value, duration = 1400 }: { value: number; durati
   );
 }
 
-/** Cursor-following spotlight + subtle 3D tilt (pointer devices only). */
-export function SpotlightCard({
+/** Shared reduced-motion flag for depth / throw interactions. */
+export function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setReduced(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  return reduced;
+}
+
+/**
+ * Shared depth card: cursor spotlight + subtle 3D tilt (pointer devices).
+ * Honors prefers-reduced-motion. Prefer this over one-off transforms.
+ */
+export function DepthCard({
   children,
   className,
   tilt = true,
@@ -117,8 +133,9 @@ export function SpotlightCard({
   tilt?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const reduced = usePrefersReducedMotion();
   const onMove = (e: React.PointerEvent) => {
-    if (e.pointerType !== "mouse") return;
+    if (reduced || e.pointerType !== "mouse") return;
     const el = ref.current;
     if (!el) return;
     const r = el.getBoundingClientRect();
@@ -127,9 +144,9 @@ export function SpotlightCard({
     el.style.setProperty("--mx", `${x}px`);
     el.style.setProperty("--my", `${y}px`);
     if (tilt) {
-      const rx = (y / r.height - 0.5) * -5;
-      const ry = (x / r.width - 0.5) * 6;
-      el.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
+      const ny = y / r.height - 0.5;
+      const nx = x / r.width - 0.5;
+      el.style.transform = `perspective(var(--depth-perspective)) rotateX(calc(${-ny * 2} * var(--tilt-max-x))) rotateY(calc(${nx * 2} * var(--tilt-max-y))) translateY(-4px)`;
     }
   };
   const onLeave = () => {
@@ -141,13 +158,22 @@ export function SpotlightCard({
       onPointerMove={onMove}
       onPointerLeave={onLeave}
       className={cn(
-        "spotlight transition-[transform,box-shadow] duration-500 ease-[var(--ease-out-expo)] will-change-transform",
+        "depth-card spotlight transition-[transform,box-shadow] duration-500 ease-[var(--ease-throw)] will-change-transform",
         className,
       )}
     >
       {children}
     </div>
   );
+}
+
+/** @deprecated Prefer DepthCard — kept as a thin alias for existing call sites. */
+export function SpotlightCard(props: {
+  children: ReactNode;
+  className?: string;
+  tilt?: boolean;
+}) {
+  return <DepthCard {...props} />;
 }
 
 /** Infinite horizontal marquee. */

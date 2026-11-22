@@ -9,7 +9,14 @@ import { GUEST_REVIEWS } from "@/lib/content";
 import { HotelRow } from "@/components/site/hotel-card";
 import { nextWeekendStay, SearchBox } from "@/components/site/search-box";
 import { Marquee, NumberTicker, Reveal, TextReveal } from "@/components/fx/effects";
-import { CoverflowSlider, HeroSlider, StoriesRow, type HeroSlide } from "@/components/fx/sliders";
+import {
+  CoverflowSlider,
+  HeroSlider,
+  StoriesRow,
+  ThrowRail,
+  type HeroSlide,
+} from "@/components/fx/sliders";
+import { DepthCard } from "@/components/fx/effects";
 import { CinematicShowcase } from "@/components/fx/cinematic";
 import { imgProps } from "@/lib/images";
 import { BRAND } from "@/lib/brand";
@@ -90,7 +97,7 @@ function Index() {
           <HeroSlider slides={HERO_SLIDES} />
 
           <div
-            className="word-reveal mt-6 block md:mt-10"
+            className="depth-plane word-reveal relative z-10 mt-6 block md:mt-10"
             style={{ "--delay": "600ms" } as CSSProperties}
           >
             <SearchBox showTabs showRecent />
@@ -190,45 +197,48 @@ function Index() {
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </Reveal>
-        <div className="no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 pb-1 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-6">
-          {DEAL_HOTELS.map((hotel, index) => {
+        <ThrowRail label="Ưu đãi hôm nay">
+          {DEAL_HOTELS.map((hotel) => {
             const off = dealOff(hotel);
             return (
-              <Reveal key={hotel.id} delay={index * 50} className="w-44 shrink-0 sm:w-auto">
-                <Link
-                  to="/khach-san/$id"
-                  params={{ id: hotel.id }}
-                  className="group block overflow-hidden rounded-2xl border bg-card shadow-[var(--shadow-soft)] transition-shadow hover:shadow-[var(--shadow-lift)]"
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    <img
-                      {...imgProps(hotel.image, "(min-width: 1024px) 180px, 176px")}
-                      alt={hotel.name}
-                      loading="lazy"
-                      decoding="async"
-                      className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <span className="absolute left-2 top-2 rounded-md bg-secondary px-2 py-0.5 text-[11px] font-bold text-secondary-foreground">
-                      -{off}%
-                    </span>
-                  </div>
-                  <div className="space-y-1 p-3">
-                    <p className="line-clamp-1 text-sm font-semibold">{hotel.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {hotel.rating.toFixed(1)} · {ratingLabel(hotel.rating)}
-                    </p>
-                    <p className="text-sm font-bold text-primary">
-                      {formatVnd(hotel.price)}
-                      <span className="ml-1 text-xs font-medium text-muted-foreground line-through">
-                        {formatVnd(hotel.oldPrice)}
+              <div key={hotel.id} className="min-w-0 shrink-0 grow-0 basis-[42%] sm:basis-[28%] lg:basis-[15.5%]">
+                <DepthCard className="h-full rounded-2xl">
+                  <Link
+                    to="/khach-san/$id"
+                    params={{ id: hotel.id }}
+                    className="group block overflow-hidden rounded-2xl border bg-card shadow-[var(--shadow-soft)] transition-shadow hover:shadow-[var(--shadow-lift)]"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <img
+                        {...imgProps(hotel.image, "(min-width: 1024px) 180px, 176px")}
+                        alt={hotel.name}
+                        loading="lazy"
+                        decoding="async"
+                        draggable={false}
+                        className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <span className="absolute left-2 top-2 rounded-md bg-secondary px-2 py-0.5 text-[11px] font-bold text-secondary-foreground">
+                        -{off}%
                       </span>
-                    </p>
-                  </div>
-                </Link>
-              </Reveal>
+                    </div>
+                    <div className="space-y-1 p-3">
+                      <p className="line-clamp-1 text-sm font-semibold">{hotel.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {hotel.rating.toFixed(1)} · {ratingLabel(hotel.rating)}
+                      </p>
+                      <p className="text-sm font-bold text-primary">
+                        {formatVnd(hotel.price)}
+                        <span className="ml-1 text-xs font-medium text-muted-foreground line-through">
+                          {formatVnd(hotel.oldPrice)}
+                        </span>
+                      </p>
+                    </div>
+                  </Link>
+                </DepthCard>
+              </div>
             );
           })}
-        </div>
+        </ThrowRail>
       </section>
 
       {/* FEATURED SLIDER */}
